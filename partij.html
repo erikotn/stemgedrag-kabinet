@@ -97,7 +97,7 @@ const datumKort = d => `${+d.slice(8)} ${MND[+d.slice(5, 7) - 1]}`;
 const lijst = a => a.length > 1 ? a.slice(0, -1).join(", ") + " en " + a[a.length - 1] : (a[0] || "");
 const kortOnd = s => { const m = s.match(/^(?:(?:nader )?gewijzigde? )?(?:motie|amendement)[\s\S]*? (?:over|ter vervanging van [\s\S]*? over) ([\s\S]*)$/i);
   const t = (m ? m[1] : s).trim(); return t.charAt(0).toUpperCase() + t.slice(1); };
-const GN = {coalitie: "de coalitie", links: "links", rechts: "rechts", midden: "het midden"};
+const GN = {coalitie: "de coalitie", links: "links", rechts: "rechts", midden: "het centrum"};
 const GROEPREST = {coalitie: "de andere coalitiepartijen", links: "de rest van links", rechts: "de rest van rechts"};
 document.querySelectorAll(".pn").forEach(e => e.textContent = naam(p.f)); document.querySelectorAll(".zn").forEach(e => e.textContent = zijn(p.f));
 
@@ -142,9 +142,9 @@ $("met-alle").innerHTML = G.map(mbalk).join("");
 (function () { const n = p.nee, pt = x => pct(x.t, x.n), isC = p.groep === "coalitie";
   const allen = H.nee || [], gem = k => { const a = allen.filter(x => isC ? x.blok === "coalitie" : x.blok !== "coalitie"); return a.length ? Math.round(a.reduce((s, x) => s + pct(x[k].t, x[k].n), 0) / a.length) : null; };
   $("nee-kop").textContent = isC ? `${Naam(p.f)} stemt tegen ${pt(n.links)}% van de voorstellen van links en ${pt(n.rechts)}% van rechts` : `${Naam(p.f)} stemt tegen ${pt(n.coa)}% van de voorstellen van de coalitie`;
-  $("nee-uitleg").textContent = `Hoe vaak stemde ${naam(p.f)} tegen moties en amendementen van andere partijen? Voorstellen die ${naam(p.f)} zelf mede indiende tellen niet mee.` + (isC ? ` Dat een coalitiepartij veel oppositievoorstellen wegstemt, is gebruikelijk.` : "");
+  $("nee-uitleg").textContent = `Hoe vaak stemde ${naam(p.f)} tegen moties en amendementen van andere partijen? Voorstellen die ${naam(p.f)} zelf mede indiende tellen niet mee.` + (isC ? ` Dat een coalitiepartij veel voorstellen van links en rechts wegstemt, is gebruikelijk: zo houdt ze haar koers.` : "");
   $("nee-vgl").innerHTML = `<p class="meta" style="margin:0 0 6px">Tegen voorstellen van:</p>` + vgl(isC ? "andere coalitiepartijen" : "de coalitie", pt(n.coa), "var(--ink)") +
-    [["links", "links", "var(--links)"], ["midden", "het midden", "var(--midden)"], ["rechts", "rechts", "var(--rechts)"]].filter(([k]) => n[k] && n[k].n).map(([k, l, kl]) => vgl(l, pt(n[k]), kl)).join("") +
+    [["links", "links", "var(--links)"], ["midden", "het centrum", "var(--midden)"], ["rechts", "rechts", "var(--rechts)"]].filter(([k]) => n[k] && n[k].n).map(([k, l, kl]) => vgl(l, pt(n[k]), kl)).join("") +
     (!isC && gem("coa") != null ? `<p class="meta" style="margin:8px 0 0">Gemiddeld ${isC ? "stemt een coalitiepartij tegen " + gem("opp") + "% van de oppositievoorstellen" : "stemt een oppositiepartij tegen " + gem("coa") + "% van de coalitievoorstellen"}.</p>` : "");
 })();
 

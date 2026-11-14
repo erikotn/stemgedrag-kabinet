@@ -88,7 +88,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":
 const $ = id => document.getElementById(id);
 
 $("n-totaal").textContent = nl(D.n_stemmingen);
-(function () { const GK = {coalitie: "var(--ink)", links: "var(--links)", midden: "var(--midden)", rechts: "var(--rechts)"}, GN = {coalitie: "Coalitie", links: "Links", midden: "Midden", rechts: "Rechts"}, z = D.zetels || {};
+(function () { const GK = {coalitie: "var(--ink)", links: "var(--links)", midden: "var(--midden)", rechts: "var(--rechts)"}, GN = {coalitie: "Coalitie", links: "Links", midden: "Centrum", rechts: "Rechts"}, z = D.zetels || {};
   document.getElementById("groepen").innerHTML = ["coalitie", "links", "midden", "rechts"].map(g => `<div><b><span class="sw" style="background:${GK[g]}"></span>${GN[g]}</b>${D.indeling[g].filter(f => z[f]).join(", ")}</div>`).join(""); })();
 $("blok-noot").innerHTML = `<b>Let op:</b> het standpunt van "rechts" valt in ${D.volgt.PVV}% van de stemmingen samen met dat van de PVV, de grootste rechtse partij. JA21 (${D.volgt.JA21}%) en Groep Markuszower (${D.volgt["Groep Markuszower"]}%) volgen het rechtse blok minder vaak. Aan de linkerkant valt "links" in ${D.volgt.PRO}% samen met PRO. "Met rechts" betekent hier dus vooral "met de PVV", "met links" vooral "met PRO". In de vergelijking per fractie verderop staan JA21 en Groep Markuszower apart.`;
 document.querySelectorAll(".n-alle").forEach(e => e.textContent = nl(D.n_stemmingen));
@@ -142,7 +142,7 @@ $("splitbars").innerHTML = P.map(f => {
 
 // Overeenstemming per fractie: stippengrafiek
 (function () {
-  const groepen = [["Links", D.indeling.links], ["Midden", D.indeling.midden], ["Rechts", D.indeling.rechts]];
+  const groepen = [["Links", D.indeling.links], ["Centrum", D.indeling.midden], ["Rechts", D.indeling.rechts]];
   $("legend-gelijk").innerHTML = P.map(f => `<span>${dot(f)}${f}</span>`).join("");
   const W = Math.max(300, $("dotplot").clientWidth || 640), LO = 40, HI = 90, lw = W < 500 ? 128 : 150, rh = 26, m = {r: 12, t: 22};
   const rows = [];
@@ -299,7 +299,7 @@ function conclusie() {
       <h3>Hoe vaak stemt elke oppositiepartij mee als de coalitie eensgezind is?</h3>
       <p class="meta">${nl(D.n_eensgezind)} stemmingen waarin D66, CDA en VVD hetzelfde stemden. JA21 staat op plek ${rang} met ${mj.pct}%.</p>
       ${D.met_coalitie.filter(x => x.f !== "GroenLinks-PvdA").map(x => balk(x.f, x.pct, kl(x.f), `${x.f} stemde in ${x.pct}% hetzelfde als de eensgezinde coalitie`, x.f === ja)).join("")}
-      <div class="dleg"><span><span class="sw" style="background:var(--links)"></span>linkse partij</span><span><span class="sw" style="background:var(--midden)"></span>middenpartij</span><span><span class="sw" style="background:var(--rechts)"></span>rechtse partij</span></div>
+      <div class="dleg"><span><span class="sw" style="background:var(--links)"></span>linkse partij</span><span><span class="sw" style="background:var(--midden)"></span>centrumpartij</span><span><span class="sw" style="background:var(--rechts)"></span>rechtse partij</span></div>
     </section>`;
   }
   $("conclusie").innerHTML = `
@@ -328,7 +328,7 @@ conclusie();
 // Werkwijze
 $("werkwijze").innerHTML = [
   `<b>Periode:</b> alle stemmingen in de Tweede Kamer vanaf de beëdiging van het kabinet op 23 februari 2026. Meegeteld zijn moties, amendementen, wetsvoorstellen en begrotingen die zijn aangenomen of verworpen; aangehouden, ingetrokken en zonder stemming aangenomen voorstellen niet.`,
-  `<b>Indeling:</b> links = ${D.indeling.links.join(", ")}; midden = ${D.indeling.midden.join(", ")}; rechts = ${D.indeling.rechts.join(", ")}. Midden telt in de blokvergelijking niet mee. De tabel per fractie hierboven hangt niet van deze indeling af.`,
+  `<b>Indeling:</b> links = ${D.indeling.links.join(", ")}; centrum = ${D.indeling.midden.join(", ")}; rechts = ${D.indeling.rechts.join(", ")}. Het centrum telt in de blokvergelijking niet mee. De tabel per fractie hierboven hangt niet van deze indeling af.`,
   `<b>Standpunt van een blok:</b> de kant waar de meeste zetels van dat blok stemden. Een stemming is "omstreden" als de meerderheid van links anders stemde dan de meerderheid van rechts.`,
   `<b>Hoofdelijke stemmingen:</b> per Kamerlid geteld; het standpunt van een fractie is dan de kant van de meerderheid van haar leden.`,
   `<b>Wat dit niet meet:</b> wie een voorstel indiende, hoe zwaar een stemming politiek weegt, en of iets "te veel" is. Elke stemming telt even zwaar; een motie over een detail weegt even zwaar als een wet.`,

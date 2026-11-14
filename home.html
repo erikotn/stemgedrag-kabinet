@@ -149,7 +149,7 @@ const datumKort = d => `${+d.slice(8)} ${MND[+d.slice(5, 7) - 1]}`;
 const lijst = a => a.length > 1 ? a.slice(0, -1).join(", ") + " en " + a[a.length - 1] : (a[0] || "");
 const kortOnd = s => { const m = s.match(/^(?:(?:nader )?gewijzigde? )?(?:motie|amendement)[\s\S]*? (?:over|ter vervanging van [\s\S]*? over) ([\s\S]*)$/i);
   const t = (m ? m[1] : s).trim(); return t.charAt(0).toUpperCase() + t.slice(1); };
-const GN = {coalitie: "Coalitie", midden: "Midden", links: "Links", rechts: "Rechts"}, GK = {coalitie: "var(--ink)", midden: "var(--midden)", links: "var(--links)", rechts: "var(--rechts)"};
+const GN = {coalitie: "Coalitie", midden: "Centrum", links: "Links", rechts: "Rechts"}, GK = {coalitie: "var(--ink)", midden: "var(--midden)", links: "var(--links)", rechts: "var(--rechts)"};
 const GROEP_VAN = {}; D.indeling.coalitie.forEach(f => GROEP_VAN[f] = "coalitie"); D.indeling.links.forEach(f => GROEP_VAN[f] = "links"); D.indeling.rechts.forEach(f => GROEP_VAN[f] = "rechts"); D.indeling.midden.forEach(f => GROEP_VAN[f] = "midden");
 const groepNaam = f => ({coalitie: "de andere coalitiepartijen", links: "de rest van links", rechts: "de rest van rechts"})[GROEP_VAN[f]];
 $("n-totaal").textContent = nl(D.n_stemmingen);
@@ -197,7 +197,7 @@ $("strip").innerHTML = `<b>Laatste stemronde · ${datumLang(D.ronde_dag)}</b><sp
 // ---------- wint links of rechts ----------
 const balk = (lbl, aan, n, kl) => `<div class="r3"><b>${lbl}</b><div class="paar" style="margin:0"><div class="rb"><div class="seg" style="width:${pct(aan, n)}%;background:${kl}" data-tip="${aan} van de ${n} voorstellen aangenomen"></div></div><div class="rp">${pct(aan, n)}%</div></div></div>`;
 $("wint-kop").textContent = Math.abs(verschil) <= 5 ? "Links en rechts krijgen ongeveer even vaak hun zin" : `${verschil > 0 ? "Links" : "Rechts"} krijgt vaker zijn zin`;
-$("wint-uitleg").innerHTML = `Partijen dienen moties en amendementen in. Van alle voorstellen van <b>linkse</b> partijen werd <b>${SP("links")}%</b> aangenomen, van <b>rechtse</b> partijen <b>${SP("rechts")}%</b>. De coalitie krijgt bijna altijd haar zin (${SP("coalitie")}%), het midden ook vaak (${SP("midden")}%).`;
+$("wint-uitleg").innerHTML = `Partijen dienen moties en amendementen in. Van alle voorstellen van <b>linkse</b> partijen werd <b>${SP("links")}%</b> aangenomen, van <b>rechtse</b> partijen <b>${SP("rechts")}%</b>. De coalitie krijgt bijna altijd haar zin (${SP("coalitie")}%), het centrum ook vaak (${SP("midden")}%).`;
 $("wint-kamp").innerHTML = ["links", "rechts", "midden", "coalitie"].map(g => balk(GN[g], S[g].aan, S[g].n, GK[g])).join("");
 $("wint-kw").innerHTML = `<table><tr><th></th>${D.succes.kwartaal.map(q => `<th class="num">${q.q.replace(" K", " – K")}</th>`).join("")}</tr>` +
   ["links", "rechts", "midden", "coalitie"].map(g => `<tr><td>${GN[g]}</td>${D.succes.kwartaal.map(q => `<td class="num">${q[g] == null ? "–" : q[g] + "%"}</td>`).join("")}</tr>`).join("") +
@@ -246,7 +246,7 @@ $("overlopers").innerHTML = D.overlopers.filter((o, i, a) => a.findIndex(x => x.
   const mx = Math.max(...opp.map(x => pt(x.coa)));
   $("nee-balken").innerHTML = opp.map(x => `<div class="rank"><div>${dot(x.f)} ${plink(x.f)}</div><div class="rb"><div class="seg" style="width:${100 * pt(x.coa) / mx}%;background:${kleur(x.f)}" data-tip="${esc(x.f)} stemde tegen ${x.coa.t} van de ${x.coa.n} coalitievoorstellen"></div></div><div class="rp">${pt(x.coa)}%</div></div>`).join("");
   const cg = k => Math.round(coa.reduce((s, x) => s + pt(x[k]), 0) / coa.length);
-  $("nee-coa").textContent = `En de coalitie zelf? D66, CDA en VVD stemmen gemiddeld tegen ${cg("links")}% van de voorstellen van links, ${cg("midden")}% van het midden en ${cg("rechts")}% van rechts.`;
+  $("nee-coa").textContent = `En de coalitie zelf? D66, CDA en VVD stemmen gemiddeld tegen ${cg("links")}% van de voorstellen van links, ${cg("midden")}% van het centrum en ${cg("rechts")}% van rechts.`;
 })();
 
 // ---------- laatste ronde ----------
