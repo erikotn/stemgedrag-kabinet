@@ -166,7 +166,7 @@ kab = dict(
 )
 
 # --- 4. wie gaf de doorslag ------------------------------------------------------
-HUIDIG = sorted((f for f in zetels if zetels[f] > 0), key=lambda f: -zetels[f])
+HUIDIG = sorted((f for f in zetels if zetels[f] > 0), key=lambda f: (-zetels[f], f.lower()))
 BLOK = {**{f: "links" for f in LINKS}, **{f: "rechts" for f in RECHTS}, **{f: "midden" for f in MIDDEN}, **{f: "coalitie" for f in COALITIE}}
 mismatch = 0
 for r in rijen:
