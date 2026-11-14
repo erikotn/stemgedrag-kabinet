@@ -107,6 +107,13 @@ details.meer{margin-top:12px} details.meer > summary{font-weight:600}
   <div class="lijst2" id="overlopers"></div>
 </section>
 
+<section id="nee">
+  <h2 class="vind"><small>Wie zegt het vaakst nee?</small><span id="nee-kop"></span></h2>
+  <p class="uitleg" id="nee-uitleg"></p>
+  <div class="card" id="nee-balken"></div>
+  <p class="meta" id="nee-coa"></p>
+</section>
+
 <section id="ronde">
   <h2 class="vind"><small id="ronde-dag"></small><span id="ronde-kop"></span></h2>
   <div class="card rijen3" id="ronde-split"></div>
@@ -229,6 +236,17 @@ $("afwijken-rest").innerHTML = AF.slice(5).map(abalk).join("");
 const over = o => `<div class="nk"><div class="wie" style="display:block">${dot(o.f)} <b>${esc(o.f)}</b> stemde ${o.stem === "V" ? "vóór" : "tegen"}, anders dan ${groepNaam(o.f)}. Had ${naam(o.f)} met de eigen groep meegestemd, dan was dit ${o.aangenomen ? "verworpen" : "aangenomen"}. · ${datumKort(o.datum)}</div>
   <div class="ond"><a href="${esc(o.url)}" target="_blank" rel="noopener" title="${esc(o.onderwerp)}">${esc(kortOnd(o.onderwerp))}</a> <span class="pill">${o.soort}</span></div>${zbar(o.V, o.T, o.aangenomen)}</div>`;
 $("overlopers").innerHTML = D.overlopers.filter((o, i, a) => a.findIndex(x => x.f === o.f) === i).slice(0, 3).map(over).join("");
+
+// ---------- nee-zeggers ----------
+(function () {
+  const pt = x => pct(x.t, x.n), N = D.nee, opp = N.filter(x => x.blok !== "coalitie").sort((a, b) => pt(b.coa) - pt(a.coa)), coa = N.filter(x => x.blok === "coalitie");
+  const top = opp.slice(0, 3), laag = opp.slice(-2).reverse();
+  $("nee-kop").textContent = `${lijst(top.map(x => x.f))} stemmen het vaakst tegen voorstellen van de coalitie`;
+  $("nee-uitleg").innerHTML = `Hoe vaak stemt een oppositiepartij tegen moties en amendementen die de coalitie (D66, CDA, VVD) indient? Voorstellen die de partij zelf mede indiende tellen niet mee. ${lijst(laag.map(x => x.f))} stemmen juist bijna altijd mee.`;
+  const mx = Math.max(...opp.map(x => pt(x.coa)));
+  $("nee-balken").innerHTML = opp.map(x => `<div class="rank"><div>${dot(x.f)} ${plink(x.f)}</div><div class="rb"><div class="seg" style="width:${100 * pt(x.coa) / mx}%;background:${kleur(x.f)}" data-tip="${esc(x.f)} stemde tegen ${x.coa.t} van de ${x.coa.n} coalitievoorstellen"></div></div><div class="rp">${pt(x.coa)}%</div></div>`).join("");
+  $("nee-coa").textContent = `En de coalitie zelf? D66, CDA en VVD stemmen tegen ${lijst(coa.map(x => pt(x.opp) + "%"))} van de voorstellen van de oppositie. Zo houdt een coalitie haar koers.`;
+})();
 
 // ---------- laatste ronde ----------
 $("ronde-dag").textContent = "Laatste stemronde · " + datumLang(D.ronde_dag);

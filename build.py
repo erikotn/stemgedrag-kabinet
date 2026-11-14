@@ -68,6 +68,7 @@ for b in besluiten:
         V=sum(voor.values()), T=sum(tegen.values()), vt=dict(voor), tg=dict(tegen),
         indiener=next((a["ActorFractie"] for a in zaak.get("ZaakActor", []) if a.get("Relatie") == "Indiener"), None),
         nummer=zaak.get("Nummer", ""), zsoort=zaak.get("Soort"),
+        mede={a["ActorFractie"] for a in zaak.get("ZaakActor", []) if a.get("Relatie") in ("Indiener", "Medeindiener") and a.get("ActorFractie")},
     ))
 
 # --- datacheck -------------------------------------------------------------
@@ -301,6 +302,15 @@ tegen_eigen = [dict(datum=r["datum"], onderwerp=r["onderwerp"], url=r["url"], V=
 tegen_eigen.sort(key=lambda x: x["datum"], reverse=True)
 overlopers.sort(key=lambda x: x["datum"], reverse=True)
 
+# --- 8b. wie zegt het vaakst nee (tegen andermans moties en amendementen) --------
+nee = {}
+for f in HUIDIG:
+    sel = [r for r in rijen if r["soort"] in ("Motie", "Amendement") and r["indiener"] and f not in r["mede"] and r["alle"].get(f)]
+    def tel(rr): return dict(t=sum(r["alle"][f] == "T" for r in rr), n=len(rr))
+    nee[f] = dict(f=f, blok=BLOK.get(f), alles=tel(sel),
+                  coa=tel([r for r in sel if BLOK.get(r["indiener"]) == "coalitie"]),
+                  opp=tel([r for r in sel if BLOK.get(r["indiener"]) != "coalitie"]))
+
 # --- 9. extra per partij -------------------------------------------------------------
 AFW = {x["f"]: x for x in afwijken}
 for f, p in partijen.items():
@@ -315,7 +325,7 @@ for f, p in partijen.items():
                 for r in sorted(eigen, key=lambda r: r["datum"], reverse=True)[:3]],
         afwijken=AFW.get(f, {}).get("pct"),
         overlopers=[o for o in overlopers if o["f"] == f][:3],
-        tegen_eigen=[t for t in tegen_eigen if f in t["tegen"]],
+        tegen_eigen=[t for t in tegen_eigen if f in t["tegen"]], nee=nee[f],
     )
 
 home = dict(
@@ -331,7 +341,7 @@ home = dict(
               maand=[dict(maand=m, links=c["links"], rechts=c["rechts"]) for m, c in sorted(bots_maand.items())],
               soort=bots_soort, ronde=dict(links=bots_ronde["links"], rechts=bots_ronde["rechts"]),
               doorslag=[dict(f=f, n=doorslag_bots.get(f, 0)) for f in sorted(HUIDIG, key=lambda f: -doorslag_bots.get(f, 0))]),
-    onverwacht=onverwacht, breuken=breuken, binnen_coalitie=binnen_coalitie, afwijken=afwijken, succes=succes_d,
+    onverwacht=onverwacht, breuken=breuken, binnen_coalitie=binnen_coalitie, nee=list(nee.values()), afwijken=afwijken, succes=succes_d,
     tegen_eigen=tegen_eigen, overlopers=overlopers[:12], overlopers_ronde=[o for o in overlopers if o["datum"] == ronde_dag],
 )
 
@@ -388,7 +398,7 @@ schrijf("kabinet.html", kab, "/kabinet/", "Met wie stemt het kabinet-Jetten? Ste
 schrijf("werkwijze.html", dict(indeling=kab["indeling"]), "/werkwijze/", "Werkwijze – De Kamer stemt",
         "Hoe De Kamer stemt de stemmingen van de Tweede Kamer analyseert: bron, kampen, botsingen, doorslag, bondjes en afwijkers.", "home")
 for f, p in partijen.items():
-    schrijf("partij.html", dict(p=p, home=dict(stand=kab["stand"], partijen=home["partijen"], indeling=kab["indeling"], n_stemmingen=len(rijen))),
+    schrijf("partij.html", dict(p=p, home=dict(stand=kab["stand"], partijen=home["partijen"], indeling=kab["indeling"], n_stemmingen=len(rijen), nee=home["nee"])),
             f"/partij/{p['slug']}/", f"Stemgedrag {f} in de Tweede Kamer – met wie stemt {f}?",
             f"Hoe stemt {f} ({p['zetels']} {'zetel' if p['zetels'] == 1 else 'zetels'}) in de Tweede Kamer? Met welke partijen {f} het vaakst hetzelfde stemt, hoe vaak {f} aan de winnende kant stond en de doorslag gaf. Sinds 23 februari 2026.",
             p["slug"])

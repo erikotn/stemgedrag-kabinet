@@ -15,7 +15,7 @@
 h2.vind{font-size:1.35rem;margin:48px 0 10px;line-height:1.3}
 h2.vind small{display:block;font-size:.78rem;font-weight:650;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-bottom:4px}
 .uitleg{font-size:.92rem;color:var(--ink2);margin:0 0 12px;max-width:68ch}
-.vgl{display:grid;grid-template-columns:110px 1fr 44px;gap:8px;align-items:center;font-size:.88rem;margin:6px 0}
+.vgl{display:grid;grid-template-columns:180px 1fr 44px;gap:8px;align-items:center;font-size:.88rem;margin:6px 0}
 .vgl .rb{background:var(--grid);border-radius:4px;height:12px;overflow:hidden} .vgl .rb div{height:100%;border-radius:4px}
 .vgl .rp{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
 .nk{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
@@ -57,6 +57,12 @@ details.meer{margin-top:10px} details.meer > summary{font-weight:600}
   <p class="uitleg">Het percentage zegt hoe vaak <span class="pn"></span> en die partij hetzelfde stemden, bij stemmingen waarin niet iedereen het eens was.</p>
   <div class="card" id="met-top"></div>
   <details class="meer"><summary>Alle partijen</summary><div class="card" id="met-alle" style="margin-top:10px"></div></details>
+</section>
+
+<section>
+  <h2 class="vind"><small>Zegt <span class="pn"></span> vaak nee?</small><span id="nee-kop"></span></h2>
+  <p class="uitleg" id="nee-uitleg"></p>
+  <div class="card" id="nee-vgl"></div>
 </section>
 
 <section id="verwacht-sec">
@@ -131,6 +137,15 @@ $("met-kop").textContent = `${Naam(p.f)} stemt het vaakst hetzelfde als ${lijst(
 const mbalk = ([g, v]) => `<div class="rank"><div>${dot(g)} ${plink(g)}</div><div class="rb"><div class="seg" style="width:${v}%;background:${kleur(g)}" data-tip="${esc(p.f)} en ${esc(g)} stemden in ${v}% hetzelfde"></div></div><div class="rp">${v}%</div></div>`;
 $("met-top").innerHTML = G.slice(0, 5).map(mbalk).join("") + `<div class="meta" style="margin:10px 0 4px">Het minst vaak hetzelfde als:</div>` + G.slice(-3).reverse().map(mbalk).join("");
 $("met-alle").innerHTML = G.map(mbalk).join("");
+
+// nee
+(function () { const n = p.nee, pt = x => pct(x.t, x.n), isC = p.groep === "coalitie";
+  const allen = H.nee || [], gem = k => { const a = allen.filter(x => isC ? x.blok === "coalitie" : x.blok !== "coalitie"); return a.length ? Math.round(a.reduce((s, x) => s + pct(x[k].t, x[k].n), 0) / a.length) : null; };
+  $("nee-kop").textContent = isC ? `${Naam(p.f)} stemt tegen ${pt(n.opp)}% van de voorstellen van de oppositie` : `${Naam(p.f)} stemt tegen ${pt(n.coa)}% van de voorstellen van de coalitie`;
+  $("nee-uitleg").textContent = `Hoe vaak stemde ${naam(p.f)} tegen moties en amendementen van andere partijen? Voorstellen die ${naam(p.f)} zelf mede indiende tellen niet mee.` + (isC ? ` Dat een coalitiepartij veel oppositievoorstellen wegstemt, is gebruikelijk.` : "");
+  $("nee-vgl").innerHTML = vgl(isC ? "tegen de andere coalitiepartijen" : "tegen de coalitie", pt(n.coa), kleur(p.f)) + vgl("tegen de oppositie", pt(n.opp), kleur(p.f)) +
+    (gem(isC ? "opp" : "coa") != null ? `<p class="meta" style="margin:8px 0 0">Gemiddeld ${isC ? "stemt een coalitiepartij tegen " + gem("opp") + "% van de oppositievoorstellen" : "stemt een oppositiepartij tegen " + gem("coa") + "% van de coalitievoorstellen"}.</p>` : "");
+})();
 
 // verwacht
 if (p.groep === "midden") { $("verwacht-sec").style.display = "none"; }
