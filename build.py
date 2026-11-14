@@ -98,6 +98,31 @@ for f in COALITIE:
         beide = [r for r in rijen if r["alle"][f] and r["alle"][g]]
         gelijk[f][g] = dict(zelfde=sum(r["alle"][f] == r["alle"][g] for r in beide), n=len(beide))
 
+# --- 1c. hoe vaak volgt elke fractie het standpunt van haar eigen blok ------------
+volgt = {}
+for f, blk in [(f, "L") for f in LINKS] + [(f, "R") for f in RECHTS]:
+    m = [r for r in rijen if r["alle"][f] and r[blk]]
+    if m:
+        volgt[f] = round(100 * sum(r["alle"][f] == r[blk] for r in m) / len(m))
+
+# --- 1d. JA21 als mogelijke partner -------------------------------------------
+PARTNER = "JA21"
+laatste = max((b for b in besluiten if b["StemmingsSoort"] == "Met handopsteken" and b["Stemming"]),
+              key=lambda b: b["Agendapunt"]["Activiteit"]["Datum"])
+zetels = {s["ActorFractie"]: s["FractieGrootte"] for s in laatste["Stemming"]}
+eens = [r for r in rijen if None not in r["p"].values() and len(set(r["p"].values())) == 1]
+met_coalitie = []
+for g in ANDEREN:
+    m = [r for r in eens if r["alle"][g]]
+    if m:
+        met_coalitie.append(dict(f=g, pct=round(100 * sum(r["alle"][g] == r["p"]["D66"] for r in m) / len(m)), n=len(m)))
+met_coalitie.sort(key=lambda x: -x["pct"])
+partner_split = {}
+for f in COALITIE:
+    sp = [r for r in rijen if None not in r["p"].values() and len(set(r["p"].values())) == 2
+          and list(r["p"].values()).count(r["p"][f]) == 1 and r["alle"][PARTNER]]
+    partner_split[f] = dict(n=len(sp), met=sum(r["alle"][PARTNER] == r["p"][f] for r in sp))
+
 # --- 2. verdeelde coalitie ------------------------------------------------------
 splits = []
 for r in rijen:
@@ -130,6 +155,7 @@ data = dict(
     n_stemmingen=len(rijen), n_omstreden=len(omstreden),
     indeling=dict(coalitie=COALITIE, links=LINKS, rechts=RECHTS, midden=MIDDEN),
     totaal=totaal, per_maand=per_maand, maanden=maanden, gelijk=gelijk, anderen=ANDEREN,
+    volgt=volgt, partner=PARTNER, zetels=zetels, met_coalitie=met_coalitie, partner_split=partner_split, n_eensgezind=len(eens),
     splits=splits, split_tel={f: dict(c) for f, c in split_tel.items()},
     blok={s: dict(blok[s]) for s in ["Wet", "Amendement", "Motie", "Alles"]},
     blok_kw={q: dict(c) for q, c in sorted(blok_kw.items())},
