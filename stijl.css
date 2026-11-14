@@ -133,3 +133,11 @@ nav.top .logo{font-weight:750;color:var(--ink);margin-right:auto;font-size:1rem}
 .groepen b{display:flex;align-items:center;gap:6px;margin-bottom:2px}
 @media (max-width:700px){.groepen{grid-template-columns:1fr 1fr}}
 details > summary{cursor:pointer}
+.pbalk{border-top:1px solid var(--line)}
+.pbalk .in{max-width:980px;margin:0 auto;padding:7px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pbalk .in::-webkit-scrollbar{display:none}
+.pbalk a{flex:none;display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid var(--line);border-radius:99px;font-size:.82rem;font-weight:600;text-decoration:none;color:var(--ink);background:var(--card);white-space:nowrap}
+.pbalk a:hover{border-color:var(--ink3)} .pbalk a.nu{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pbalk .lbl{flex:none;align-self:center;font-size:.78rem;color:var(--ink3);margin-right:2px}
+nav.top .pbalk .in{gap:6px;font-size:inherit}
+@media (max-width:760px){nav.top .pbalk .in{flex-wrap:nowrap} nav.top .in{gap:4px 14px}}

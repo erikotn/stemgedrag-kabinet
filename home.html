@@ -114,10 +114,7 @@ details.meer{margin-top:12px} details.meer > summary{font-weight:600}
   </details>
 </section>
 
-<section id="partijen">
-  <h2 class="vind"><small>Per partij</small>Kies een partij</h2>
-  <div class="pchips" id="kaarten"></div>
-</section>
+
 
 <footer>
   Bron: <a href="https://opendata.tweedekamer.nl/">open data Tweede Kamer</a> · <a href="/werkwijze/">Werkwijze</a> · <a href="/kabinet/">Dossier kabinet-Jetten</a> · <a href="https://github.com/erikotn/stemgedrag-kabinet">Code</a> · <a href="/data.json">Data</a>
@@ -241,7 +238,6 @@ const alle = () => { const q = $("zoek").value.toLowerCase(); $("ronde-alle").in
 $("zoek").addEventListener("input", alle); alle();
 
 // ---------- partijen ----------
-$("kaarten").innerHTML = D.partijen.map(p => `<a href="/partij/${p.slug}/">${dot(p.f)}${esc(p.f)} <small>${p.zetels}</small></a>`).join("");
 </script>
 </body>
 </html>

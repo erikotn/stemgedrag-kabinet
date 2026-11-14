@@ -65,10 +65,7 @@ details.meer{margin-top:10px} details.meer > summary{font-weight:600}
   <div class="lijst2" id="verwacht-lijst"></div>
 </section>
 
-<section>
-  <h2 class="vind"><small>Andere partijen</small>Kies een partij</h2>
-  <div class="pchips" id="kaarten"></div>
-</section>
+
 
 <footer>
   Bron: <a href="https://opendata.tweedekamer.nl/">open data Tweede Kamer</a> · <a href="/werkwijze/">Werkwijze</a> · <a href="/">De Kamer stemt</a>
@@ -107,7 +104,7 @@ const G = Object.entries(p.gelijk).sort((a, b) => b[1] - a[1]);
 const anderen = G.filter(([g]) => !p.groepsleden.includes(g));
 $("kruim").textContent = p.f;
 $("titel").innerHTML = `${dot(p.f)} Hoe stemt ${esc(naam(p.f))}?`;
-$("lead").textContent = `${p.f} heeft ${p.zetels} zetels en hoort bij ${GN[p.groep]}${p.groepsleden.length > 1 ? ` (${p.groepsleden.join(", ")})` : ""}.`;
+$("lead").textContent = `${p.f} heeft ${p.zetels} ${p.zetels === 1 ? "zetel" : "zetels"} en hoort bij ${GN[p.groep]}${p.groepsleden.length > 1 ? ` (${p.groepsleden.join(", ")})` : ""}.`;
 
 // kaarten
 const zbar = (V, T, aangenomen) => `<div class="zb"><span>${V} voor</span><div class="bar"><div class="v" style="flex:${V}"></div><div class="t" style="flex:${T}"></div><div class="m" style="left:${100 * 76 / 150}%"></div></div><span>${T} tegen · <b>${aangenomen ? "aangenomen" : "verworpen"}</b></span></div>`;
@@ -145,7 +142,6 @@ else {
     p.overlopers.map(o => `<div class="nk"><div class="wie">${dot(p.f)} <b>${esc(p.f)}</b> stemde ${o.stem === "V" ? "vóór" : "tegen"}, anders dan ${GROEPREST[p.groep]}. Had ${naam(p.f)} met de eigen groep meegestemd, dan was dit ${o.aangenomen ? "verworpen" : "aangenomen"}. · ${datumKort(o.datum)}</div><div class="ond"><a href="${esc(o.url)}" target="_blank" rel="noopener" title="${esc(o.onderwerp)}">${esc(kortOnd(o.onderwerp))}</a> <span class="pill">${o.soort}</span></div>${zbar(o.V, o.T, o.aangenomen)}</div>`).join("") ||
     `<p class="meta">${Naam(p.f)} draaide nog geen uitslag om door anders te stemmen dan de eigen groep.</p>`;
 }
-$("kaarten").innerHTML = H.partijen.filter(x => x.f !== p.f).map(x => `<a href="/partij/${x.slug}/">${dot(x.f)}${esc(x.f)}</a>`).join("");
 </script>
 </body>
 </html>

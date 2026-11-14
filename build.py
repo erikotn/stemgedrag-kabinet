@@ -338,7 +338,10 @@ home = dict(
 # --- schrijven ----------------------------------------------------------------------
 BASIS = "https://stemgedrag-kabinet.pages.dev"   # wordt https://dekamerstemt.nl zodra het domein gekoppeld is
 STAND_NL = dt.date.fromisoformat(kab["stand"]).strftime("%-d-%-m-%Y")
-NAV = open("nav.html").read()
+KLEUR = {"D66": "var(--d66)", "CDA": "var(--cda)", "VVD": "var(--vvd)"}
+NAV = open("nav.html").read().replace("{{PARTIJEN}}", '<span class="lbl">Partij:</span>' + "".join(
+    f'<a href="/partij/{p["slug"]}/"><span class="dot" style="background:{KLEUR.get(f, {"links": "var(--links)", "rechts": "var(--rechts)"}.get(p["blok"], "var(--midden)"))}"></span>{html.escape(f)}</a>'
+    for f, p in partijen.items()))
 pagina_lijst = []
 
 def schrijf(sjabloon, data, pad, titel, beschrijving, og, extra_ld=None):
@@ -384,7 +387,7 @@ schrijf("werkwijze.html", dict(indeling=kab["indeling"]), "/werkwijze/", "Werkwi
 for f, p in partijen.items():
     schrijf("partij.html", dict(p=p, home=dict(stand=kab["stand"], partijen=home["partijen"], indeling=kab["indeling"], n_stemmingen=len(rijen))),
             f"/partij/{p['slug']}/", f"Stemgedrag {f} in de Tweede Kamer – met wie stemt {f}?",
-            f"Hoe stemt {f} ({p['zetels']} zetels) in de Tweede Kamer? Met welke partijen {f} het vaakst hetzelfde stemt, hoe vaak {f} aan de winnende kant stond en de doorslag gaf. Sinds 23 februari 2026.",
+            f"Hoe stemt {f} ({p['zetels']} {'zetel' if p['zetels'] == 1 else 'zetels'}) in de Tweede Kamer? Met welke partijen {f} het vaakst hetzelfde stemt, hoe vaak {f} aan de winnende kant stond en de doorslag gaf. Sinds 23 februari 2026.",
             p["slug"])
 
 (SITE / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
