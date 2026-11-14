@@ -40,5 +40,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          preCommands: npx wrangler pages project list | grep -q " ${{ env.PROJECT }} " || npx wrangler pages project create ${{ env.PROJECT }} --production-branch=main
+          preCommands: npx wrangler pages project create ${{ env.PROJECT }} --production-branch=main || true
           command: pages deploy site --project-name=${{ env.PROJECT }} --branch=main
