@@ -4,6 +4,33 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {{HEAD}}
+<style>
+.top3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0 8px}
+.k3{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column}
+.k3 .vr{font-size:.92rem;font-weight:650;color:var(--ink2)}
+.k3 .big{font-size:1.7rem;font-weight:750;line-height:1.15;margin:8px 0 2px;font-variant-numeric:tabular-nums}
+.k3 .zin{font-size:.86rem;color:var(--ink2);line-height:1.35}
+.k3 .vis{margin-top:auto;padding-top:10px}
+@media (max-width:760px){.top3{grid-template-columns:1fr}}
+h2.vind{font-size:1.35rem;margin:48px 0 10px;line-height:1.3}
+h2.vind small{display:block;font-size:.78rem;font-weight:650;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-bottom:4px}
+.uitleg{font-size:.92rem;color:var(--ink2);margin:0 0 12px;max-width:68ch}
+.vgl{display:grid;grid-template-columns:110px 1fr 44px;gap:8px;align-items:center;font-size:.88rem;margin:6px 0}
+.vgl .rb{background:var(--grid);border-radius:4px;height:12px;overflow:hidden} .vgl .rb div{height:100%;border-radius:4px}
+.vgl .rp{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.nk{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.nk .wie{font-size:.85rem;color:var(--ink2);margin-bottom:4px}
+.nk .ond{font-weight:600;line-height:1.35;margin-bottom:8px} .nk .ond a{text-decoration:none} .nk .ond a:hover{text-decoration:underline}
+.zb{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;font-variant-numeric:tabular-nums;font-size:.85rem}
+.zb .bar{position:relative;display:flex;gap:2px;height:12px}
+.zb .bar .v{background:var(--ink);border-radius:3px 0 0 3px} .zb .bar .t{background:var(--grid);border-radius:0 3px 3px 0}
+.zb .bar .m{position:absolute;top:-4px;bottom:-4px;border-left:2px dashed var(--ink3)}
+.lijst2{display:grid;gap:10px}
+.pchips{display:flex;flex-wrap:wrap;gap:8px}
+.pchips a{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border:1px solid var(--line);border-radius:99px;background:var(--card);text-decoration:none;color:var(--ink);font-weight:600;font-size:.9rem}
+.pchips a:hover{border-color:var(--ink3)}
+details.meer{margin-top:10px} details.meer > summary{font-weight:600}
+</style>
 </head>
 <body>
 {{NAV}}
@@ -12,26 +39,39 @@
   <div class="breadcrumb"><a href="/">De Kamer stemt</a> › <a href="/#partijen">Partijen</a> › <span id="kruim"></span></div>
   <h1 id="titel"></h1>
   <p class="lead" id="lead"></p>
-  <p class="meta">Stand: stemmingen tot en met {{STAND}} · bron: open data van de Tweede Kamer</p>
+  <p class="meta">Bijgewerkt t/m {{STAND}} · alle stemmingen sinds 23 februari 2026 · open data Tweede Kamer</p>
 </header>
 
-<div class="tegels" id="tegels"></div>
+<div class="top3" id="top3"></div>
 
 <section>
-  <h2 id="met-kop"></h2>
-  <p class="vraag" id="met-tekst"></p>
-  <div class="card" id="met-balken"></div>
-  <div class="dleg"><span><span class="sw" style="background:var(--links)"></span>linkse partij</span><span><span class="sw" style="background:var(--midden)"></span>middenpartij</span><span><span class="sw" style="background:var(--rechts)"></span>rechtse partij</span><span><span class="sw" style="background:var(--d66)"></span>D66</span><span><span class="sw" style="background:var(--cda)"></span>CDA</span><span><span class="sw" style="background:var(--vvd)"></span>VVD</span></div>
-  <p class="meta">Percentage van de stemmingen waarin beide partijen een standpunt innamen en hetzelfde stemden, gerekend over de stemmingen waarin niet alle fracties hetzelfde stemden.</p>
+  <h2 class="vind"><small>Krijgt <span class="pn"></span> <span class="zn"></span> zin?</small><span id="zin-kop"></span></h2>
+  <p class="uitleg" id="zin-uitleg"></p>
+  <div class="card" id="zin-vgl"></div>
+  <h3 id="recent-kop"></h3>
+  <div class="lijst2" id="recent"></div>
 </section>
 
 <section>
-  <h2>Andere partijen</h2>
-  <div class="kaarten" id="kaarten"></div>
+  <h2 class="vind"><small>Met wie stemt <span class="pn"></span>?</small><span id="met-kop"></span></h2>
+  <p class="uitleg">Het percentage zegt hoe vaak <span class="pn"></span> en die partij hetzelfde stemden, bij stemmingen waarin niet iedereen het eens was.</p>
+  <div class="card" id="met-top"></div>
+  <details class="meer"><summary>Alle partijen</summary><div class="card" id="met-alle" style="margin-top:10px"></div></details>
+</section>
+
+<section id="verwacht-sec">
+  <h2 class="vind"><small>Stemt <span class="pn"></span> zoals verwacht?</small><span id="verwacht-kop"></span></h2>
+  <p class="uitleg" id="verwacht-uitleg"></p>
+  <div class="lijst2" id="verwacht-lijst"></div>
+</section>
+
+<section>
+  <h2 class="vind"><small>Andere partijen</small>Kies een partij</h2>
+  <div class="pchips" id="kaarten"></div>
 </section>
 
 <footer>
-  Bron: <a href="https://opendata.tweedekamer.nl/">Gegevensmagazijn van de Tweede Kamer</a>. Werkwijze: zie <a href="/#werkwijze">de voorpagina</a>. Alle cijfers worden automatisch berekend, zonder AI.
+  Bron: <a href="https://opendata.tweedekamer.nl/">open data Tweede Kamer</a> · <a href="/werkwijze/">Werkwijze</a> · <a href="/">De Kamer stemt</a>
 </footer>
 </main>
 
@@ -46,26 +86,66 @@ const info = f => H.partijen.find(x => x.f === f) || {};
 const kleur = f => COA[f] ? `var(${COA[f]})` : info(f).blok === "links" ? "var(--links)" : info(f).blok === "rechts" ? "var(--rechts)" : "var(--midden)";
 const dot = f => `<span class="dot" style="background:${kleur(f)}"></span>`;
 const plink = f => info(f).slug ? `<a href="/partij/${info(f).slug}/">${esc(f)}</a>` : esc(f);
+const naam = f => f === "CDA" ? "het CDA" : f === "VVD" ? "de VVD" : f === "PVV" ? "de PVV" : f === "SGP" ? "de SGP" : f === "SP" ? "de SP" : f === "ChristenUnie" ? "de ChristenUnie" : f;
+const zijn = f => f === "CDA" ? "zijn" : "haar";
+const Naam = f => { const n = naam(f); return n.charAt(0).toUpperCase() + n.slice(1); };
+const MND = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+const datumKort = d => `${+d.slice(8)} ${MND[+d.slice(5, 7) - 1]}`;
 const lijst = a => a.length > 1 ? a.slice(0, -1).join(", ") + " en " + a[a.length - 1] : (a[0] || "");
+const kortOnd = s => { const m = s.match(/^(?:(?:nader )?gewijzigde? )?(?:motie|amendement)[\s\S]*? (?:over|ter vervanging van [\s\S]*? over) ([\s\S]*)$/i);
+  const t = (m ? m[1] : s).trim(); return t.charAt(0).toUpperCase() + t.slice(1); };
+const GN = {coalitie: "de coalitie", links: "links", rechts: "rechts", midden: "het midden"};
+const GROEPREST = {coalitie: "de andere coalitiepartijen", links: "de rest van links", rechts: "de rest van rechts"};
+document.querySelectorAll(".pn").forEach(e => e.textContent = naam(p.f)); document.querySelectorAll(".zn").forEach(e => e.textContent = zijn(p.f));
 
 const TIP = document.createElement("div"); TIP.className = "tip"; TIP.style.position = "fixed"; document.body.appendChild(TIP);
 document.addEventListener("pointermove", e => { const t = e.target.closest("[data-tip]"); if (!t) { TIP.style.display = "none"; return; }
   TIP.innerHTML = t.dataset.tip; TIP.style.display = "block"; TIP.style.left = Math.min(innerWidth - TIP.offsetWidth - 8, e.clientX + 14) + "px"; TIP.style.top = (e.clientY - TIP.offsetHeight - 12) + "px"; });
 
-const won = pct(p.won, p.n), mot = pct(p.moties_aangenomen, p.moties);
-$("kruim").textContent = p.f;
-$("titel").innerHTML = `${dot(p.f)} Stemgedrag ${esc(p.f)} in de Tweede Kamer`;
-$("lead").innerHTML = `${esc(p.f)} heeft ${p.zetels} zetels. Sinds 23 februari 2026 stemde ${esc(p.f)} mee over ${nl(p.n)} moties, amendementen en wetsvoorstellen en stond daarbij in <b>${won}%</b> van de gevallen aan de winnende kant. ` +
-  `${esc(p.f)} gaf <b>${nl(p.doorslag)} keer</b> de doorslag: zonder ${esc(p.f)} was de uitslag dan andersom geweest.` +
-  (p.moties ? ` Van de ${nl(p.moties)} moties die ${esc(p.f)} als eerste indiende, werden er ${nl(p.moties_aangenomen)} aangenomen (${mot}%).` : "");
-$("tegels").innerHTML = [[p.zetels, "zetels"], [won + "%", "aan de winnende kant"], [nl(p.doorslag) + "×", "de doorslag gegeven"], [p.moties ? `${mot}%` : "–", `van de eigen moties aangenomen${p.moties ? ` (${p.moties_aangenomen} van ${p.moties})` : ""}`]]
-  .map(([g, t]) => `<div class="tegel"><div class="g">${g}</div><div class="t">${t}</div></div>`).join("");
-
+const eigenPct = pct(p.voorstellen_aan, p.voorstellen), groepPct = pct(p.groep_voorstellen_aan, p.groep_voorstellen);
 const G = Object.entries(p.gelijk).sort((a, b) => b[1] - a[1]);
-$("met-kop").textContent = `Met wie stemt ${p.f}?`;
-$("met-tekst").innerHTML = `${esc(p.f)} stemt het vaakst hetzelfde als ${lijst(G.slice(0, 3).map(([g, v]) => `${plink(g)} (${v}%)`))}, en het minst vaak als ${lijst(G.slice(-2).reverse().map(([g, v]) => `${plink(g)} (${v}%)`))}.`;
-$("met-balken").innerHTML = G.map(([g, v]) => `<div class="rank"><div>${dot(g)} ${plink(g)}</div><div class="rb"><div class="seg" style="width:${v}%;background:${kleur(g)}" data-tip="${esc(p.f)} en ${esc(g)} stemden in ${v}% hetzelfde"></div></div><div class="rp">${v}%</div></div>`).join("");
-$("kaarten").innerHTML = H.partijen.filter(x => x.f !== p.f).map(x => `<a class="kaart" href="/partij/${x.slug}/"><b>${dot(x.f)}${esc(x.f)}</b><small>${x.zetels} zetels</small></a>`).join("");
+const anderen = G.filter(([g]) => !p.groepsleden.includes(g));
+$("kruim").textContent = p.f;
+$("titel").innerHTML = `${dot(p.f)} Hoe stemt ${esc(naam(p.f))}?`;
+$("lead").textContent = `${p.f} heeft ${p.zetels} zetels en hoort bij ${GN[p.groep]}${p.groepsleden.length > 1 ? ` (${p.groepsleden.join(", ")})` : ""}.`;
+
+// kaarten
+const zbar = (V, T, aangenomen) => `<div class="zb"><span>${V} voor</span><div class="bar"><div class="v" style="flex:${V}"></div><div class="t" style="flex:${T}"></div><div class="m" style="left:${100 * 76 / 150}%"></div></div><span>${T} tegen · <b>${aangenomen ? "aangenomen" : "verworpen"}</b></span></div>`;
+const vgl = (lbl, v, kl) => `<div class="vgl"><span>${lbl}</span><div class="rb"><div style="width:${v}%;background:${kl}"></div></div><span class="rp">${v}%</span></div>`;
+$("top3").innerHTML = [
+  {vr: `Krijgt ${naam(p.f)} ${zijn(p.f)} zin?`, big: p.voorstellen ? `${eigenPct}%` : "–", zin: p.voorstellen ? `van de eigen voorstellen aangenomen (${p.voorstellen_aan} van ${p.voorstellen})` : "diende geen voorstellen in",
+   vis: p.voorstellen && p.groepsleden.length > 1 ? vgl(p.f, eigenPct, kleur(p.f)) + vgl(`heel ${GN[p.groep]}`, groepPct, "var(--ink3)") : ""},
+  {vr: `Met wie stemt ${naam(p.f)} het vaakst?`, big: esc(anderen[0][0]), zin: `buiten de eigen groep: ${anderen[0][1]}% hetzelfde gestemd`,
+   vis: anderen.slice(0, 3).map(([g, v]) => vgl(g, v, kleur(g))).join("")},
+  p.afwijken != null ? {vr: `Stemt ${naam(p.f)} zoals verwacht?`, big: p.tegen_eigen.length ? `${p.tegen_eigen.length}× tegen` : `${p.afwijken}% anders`,
+   zin: p.tegen_eigen.length ? "een wet van het eigen kabinet" : `dan ${GROEPREST[p.groep]}`, vis: ""}
+  : {vr: `Staat ${naam(p.f)} aan de winnende kant?`, big: `${pct(p.won, p.n)}%`, zin: "van de stemmingen stemde de partij zoals de uitslag werd", vis: ""},
+].map(c => `<div class="k3"><span class="vr">${c.vr}</span><span class="big">${c.big}</span><span class="zin">${c.zin}</span><span class="vis">${c.vis}</span></div>`).join("");
+
+// zin
+$("zin-kop").textContent = !p.voorstellen ? `${Naam(p.f)} diende geen voorstellen in` : eigenPct >= groepPct + 5 ? `${Naam(p.f)} krijgt vaker ${zijn(p.f)} zin dan de rest van ${GN[p.groep]}` : eigenPct <= groepPct - 5 ? `${Naam(p.f)} krijgt minder vaak ${zijn(p.f)} zin dan de rest van ${GN[p.groep]}` : `${eigenPct}% van de voorstellen van ${naam(p.f)} werd aangenomen`;
+$("zin-uitleg").textContent = p.voorstellen ? `${Naam(p.f)} diende als eerste ${nl(p.voorstellen)} moties en amendementen in; ${nl(p.voorstellen_aan)} daarvan werden aangenomen. Ter vergelijking: van alle voorstellen van ${GN[p.groep]} werd ${groepPct}% aangenomen.` : "";
+$("zin-vgl").innerHTML = p.voorstellen ? vgl(p.f, eigenPct, kleur(p.f)) + vgl(`heel ${GN[p.groep]}`, groepPct, "var(--ink3)") : "";
+$("recent-kop").textContent = p.recent.length ? `Laatste voorstellen van ${naam(p.f)}` : "";
+$("recent").innerHTML = p.recent.map(r => `<div class="nk"><div class="wie">${datumKort(r.datum)} · <span class="pill">${r.soort}</span></div><div class="ond"><a href="${esc(r.url)}" target="_blank" rel="noopener" title="${esc(r.onderwerp)}">${esc(kortOnd(r.onderwerp))}</a></div>${zbar(r.V, r.T, r.aangenomen)}</div>`).join("");
+
+// met wie
+$("met-kop").textContent = `${Naam(p.f)} stemt het vaakst hetzelfde als ${lijst(G.slice(0, 3).map(([g]) => g))}`;
+const mbalk = ([g, v]) => `<div class="rank"><div>${dot(g)} ${plink(g)}</div><div class="rb"><div class="seg" style="width:${v}%;background:${kleur(g)}" data-tip="${esc(p.f)} en ${esc(g)} stemden in ${v}% hetzelfde"></div></div><div class="rp">${v}%</div></div>`;
+$("met-top").innerHTML = G.slice(0, 5).map(mbalk).join("") + `<div class="meta" style="margin:10px 0 4px">Het minst vaak hetzelfde als:</div>` + G.slice(-3).reverse().map(mbalk).join("");
+$("met-alle").innerHTML = G.map(mbalk).join("");
+
+// verwacht
+if (p.groep === "midden") { $("verwacht-sec").style.display = "none"; }
+else {
+  $("verwacht-kop").textContent = p.tegen_eigen.length ? `${Naam(p.f)} stemde ${p.tegen_eigen.length === 1 ? "één keer" : p.tegen_eigen.length + " keer"} tegen een wet van het eigen kabinet` : `${Naam(p.f)} stemt in ${p.afwijken}% van de gevallen anders dan ${GROEPREST[p.groep]}`;
+  $("verwacht-uitleg").textContent = (p.groep === "coalitie" ? `Coalitiepartijen stemmen normaal vóór de wetten van hun eigen kabinet. ` : ``) +
+    `${Naam(p.f)} stemde in ${p.afwijken}% van de stemmingen anders dan ${GROEPREST[p.groep]}${p.groep === "coalitie" ? " (als die twee het eens waren)" : ""}. Hieronder ${p.tegen_eigen.length ? "de wetten waar het om gaat, en " : ""}de laatste keren dat ${naam(p.f)} daarmee de uitslag omdraaide.`;
+  $("verwacht-lijst").innerHTML = p.tegen_eigen.map(t => `<div class="nk"><div class="wie">${dot(p.f)} <b>${esc(p.f)}</b> stemde tegen een wet van het eigen kabinet · ${datumKort(t.datum)}</div><div class="ond"><a href="${esc(t.url)}" target="_blank" rel="noopener">${esc(t.onderwerp)}</a></div>${zbar(t.V, t.T, t.aangenomen)}</div>`).join("") +
+    p.overlopers.map(o => `<div class="nk"><div class="wie">${dot(p.f)} <b>${esc(p.f)}</b> stemde ${o.stem === "V" ? "vóór" : "tegen"}, anders dan ${GROEPREST[p.groep]}. Had ${naam(p.f)} met de eigen groep meegestemd, dan was dit ${o.aangenomen ? "verworpen" : "aangenomen"}. · ${datumKort(o.datum)}</div><div class="ond"><a href="${esc(o.url)}" target="_blank" rel="noopener" title="${esc(o.onderwerp)}">${esc(kortOnd(o.onderwerp))}</a> <span class="pill">${o.soort}</span></div>${zbar(o.V, o.T, o.aangenomen)}</div>`).join("") ||
+    `<p class="meta">${Naam(p.f)} draaide nog geen uitslag om door anders te stemmen dan de eigen groep.</p>`;
+}
+$("kaarten").innerHTML = H.partijen.filter(x => x.f !== p.f).map(x => `<a href="/partij/${x.slug}/">${dot(x.f)}${esc(x.f)}</a>`).join("");
 </script>
 </body>
 </html>

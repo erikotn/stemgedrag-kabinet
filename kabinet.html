@@ -11,58 +11,49 @@
 <header>
   <div class="breadcrumb"><a href="/">De Kamer stemt</a> › Dossier kabinet-Jetten</div>
   <h1>Met wie stemt het kabinet-Jetten?</h1>
-  <p class="lead">D66, CDA en VVD hebben samen 66 van de 150 zetels. Voor elke meerderheid zijn ze afhankelijk van de oppositie. Deze pagina laat zien hoe de drie coalitiepartijen sinds de beëdiging op 23 februari 2026 in de Tweede Kamer hebben gestemd – en met wie.</p>
-  <p class="meta">Stand: stemmingen tot en met {{STAND}} · <span id="n-totaal"></span> stemmingen · bron: open data van de Tweede Kamer · bijgewerkt na elke stemronde</p>
+  <p class="lead">D66, CDA en VVD hebben samen 66 van de 150 zetels. Met wie stemmen ze, en waar halen ze hun meerderheid?</p>
+  <p class="meta">Bijgewerkt t/m {{STAND}} · <span id="n-totaal"></span> stemmingen sinds 23 februari 2026 · open data Tweede Kamer</p>
 </header>
 
+<div class="groepen" id="groepen"></div>
 <div id="conclusie"></div>
 
 <section>
-  <h2>Waar haalt het kabinet zijn meerderheid?</h2>
-  <p class="vraag">D66, CDA en VVD hebben samen 66 zetels; voor een meerderheid zijn er 76 nodig. Hier staan alle stemmingen waarin de drie coalitiepartijen samen vóór stemden. Per stemming is gekeken: kwamen ze aan 76 zetels met alleen de linkse partijen die ook voor stemden, alleen met de rechtse, of met allebei (breed)?</p>
-  <div class="hero" id="kern-blok"></div>
-  <div class="card">
-    <div class="legend"><span><span class="sw" style="background:var(--links)"></span>alleen via links</span><span><span class="sw" style="background:var(--midden)"></span>breed: links óf rechts volstaat</span><span><span class="sw" style="background:var(--rechts)"></span>alleen via rechts</span></div>
-    <div id="blokbars"></div>
-  </div>
-  <details><summary>Als tabel</summary><div class="scroll" id="tabel-blok"></div></details>
-</section>
-
-<section>
-  <h2>Als links en rechts tegenover elkaar staan</h2>
-  <p class="vraag">Bij veel stemmingen zijn links en rechts het eens, bijvoorbeeld als bijna iedereen voor is. Die zeggen niets over de koers. Bij <span id="n-omstreden"></span> van de <span class="n-alle"></span> stemmingen stonden links en rechts wél tegenover elkaar: de meeste linkse zetels stemden voor en de meeste rechtse tegen, of andersom. Dan moest elke coalitiepartij kiezen. Hoe vaak koos ze de kant van links, en hoe vaak die van rechts?</p>
+  <h2>Kiezen D66, CDA en VVD de kant van links of van rechts?</h2>
+  <p class="uitleg">Bij <span id="n-omstreden"></span> van de <span class="n-alle"></span> stemmingen stemden links en rechts tegengesteld. Dan moest elke coalitiepartij kiezen. De balk laat zien hoe vaak ze met links (rood) of met rechts (blauw) meestemde.</p>
   <div class="card">
     <div class="as"><span>← met links</span><span>met rechts →</span></div>
     <div id="splitbars"></div>
   </div>
-  <h3>Per maand</h3>
-  <p class="vraag">Elke kolom is één maand. <span class="sw" style="background:var(--links)"></span> rood = met links, <span class="sw" style="background:var(--rechts)"></span> blauw = met rechts. Komt het rood boven de stippellijn, dan stemde de partij die maand vaker met links dan met rechts.</p>
-  <div class="sm" id="sm-maand"></div>
-  <details><summary>Als tabel</summary><div class="scroll" id="tabel-maand"></div></details>
   <p class="meta" id="blok-noot"></p>
+  <details><summary>Per maand</summary>
+    <p class="uitleg" style="margin-top:8px">Elke kolom is één maand: rood = met links, blauw = met rechts. Boven de stippellijn = vaker met links.</p>
+    <div class="sm" id="sm-maand"></div>
+    <details><summary>Als tabel</summary><div class="scroll" id="tabel-maand"></div></details>
+  </details>
 </section>
 
 <section>
   <h2>Als de coalitie verdeeld is</h2>
-  <p class="vraag">Bij <span id="n-splits"></span> stemmingen stemde één coalitiepartij anders dan de andere twee. Welke partij week af, en stemde die dan met links of met rechts mee?</p>
+  <p class="uitleg">Bij <span id="n-splits"></span> stemmingen stemde één coalitiepartij anders dan de andere twee. De balk laat zien hoe vaak dat gebeurde, en of die partij dan met links (rood) of met rechts (blauw) meestemde. Grijs: links en rechts waren het toen eens.</p>
   <div class="card">
-    <div class="legend"><span><span class="sw" style="background:var(--links)"></span>week af en stemde met links mee</span><span><span class="sw" style="background:var(--midden)"></span>links en rechts waren het eens</span><span><span class="sw" style="background:var(--rechts)"></span>week af en stemde met rechts mee</span></div>
     <div id="splitcount"></div>
   </div>
-  <details><summary>Als tabel</summary><div class="scroll" id="tabel-split-tel"></div></details>
-  <h3>Alle stemmingen met een verdeelde coalitie</h3>
-  <div class="filters">
-    <input id="zoek" type="search" placeholder="Zoek op onderwerp" aria-label="Zoek op onderwerp">
-    <select id="f-alleen" aria-label="Wie week af"><option value="">Iedereen</option><option>D66</option><option>CDA</option><option>VVD</option></select>
-    <select id="f-soort" aria-label="Soort"><option value="">Alle soorten</option><option>Motie</option><option>Amendement</option><option>Wet</option></select>
-  </div>
-  <div class="scroll" id="tabel-splits"></div>
-  <button class="meer" id="meer" type="button">Toon meer</button>
+  <details><summary>Alle stemmingen met een verdeelde coalitie</summary>
+    <div class="filters">
+      <input id="zoek" type="search" placeholder="Zoek op onderwerp" aria-label="Zoek op onderwerp">
+      <select id="f-alleen" aria-label="Wie week af"><option value="">Iedereen</option><option>D66</option><option>CDA</option><option>VVD</option></select>
+      <select id="f-soort" aria-label="Soort"><option value="">Alle soorten</option><option>Motie</option><option>Amendement</option><option>Wet</option></select>
+    </div>
+    <div class="scroll" id="tabel-splits"></div>
+    <button class="meer" id="meer" type="button">Toon meer</button>
+    <details><summary>Als tabel</summary><div class="scroll" id="tabel-split-tel"></div></details>
+  </details>
 </section>
 
 <section>
-  <h2>Hoe vaak stemmen ze hetzelfde als elke andere fractie?</h2>
-  <p class="vraag">Percentage van alle stemmingen waarin beide fracties een standpunt innamen en hetzelfde stemden. Hoe verder naar rechts een stip, hoe vaker de coalitiepartij hetzelfde stemde als die fractie.</p>
+  <h2>Met welke partijen stemmen D66, CDA en VVD?</h2>
+  <p class="uitleg">Per partij: hoe vaak D66 (groen), CDA (oranje) en VVD (paars) hetzelfde stemden als die partij. Hoe verder naar rechts een stip, hoe vaker.</p>
   <div class="card">
     <div class="legend" id="legend-gelijk"></div>
     <div class="chart" id="dotplot"></div>
@@ -70,13 +61,18 @@
   <details><summary>Als tabel</summary><div class="scroll" id="tabel-gelijk"></div></details>
 </section>
 
-<section>
-  <h2>Werkwijze</h2>
-  <ul id="werkwijze"></ul>
-</section>
+<details style="margin-top:40px"><summary>Meerderheden per soort en per kwartaal</summary>
+  <div class="hero" id="kern-blok"></div>
+  <div class="card">
+    <div class="legend"><span><span class="sw" style="background:var(--links)"></span>alleen via links</span><span><span class="sw" style="background:var(--midden)"></span>breed: links óf rechts volstaat</span><span><span class="sw" style="background:var(--rechts)"></span>alleen via rechts</span></div>
+    <div id="blokbars"></div>
+  </div>
+  <details><summary>Als tabel</summary><div class="scroll" id="tabel-blok"></div></details>
+</details>
+<details><summary>Hoe komen de oordelen tot stand?</summary><ul id="werkwijze"></ul><p>Zie ook de <a href="/werkwijze/">algemene werkwijze</a>.</p></details>
 
 <footer>
-  Bron: <a href="https://opendata.tweedekamer.nl/">Gegevensmagazijn van de Tweede Kamer</a> (OData-API). Per stemming per fractie; bij hoofdelijke stemmingen per Kamerlid. De pagina wordt automatisch opnieuw gebouwd zodra er nieuwe stemmingen zijn. Laatst gebouwd: <span id="gebouwd"></span>.
+  Bron: <a href="https://opendata.tweedekamer.nl/">open data Tweede Kamer</a> · <a href="/werkwijze/">Werkwijze</a> · <a href="/">De Kamer stemt</a> · gebouwd <span id="gebouwd"></span>
 </footer>
 </main>
 
@@ -92,6 +88,8 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":
 const $ = id => document.getElementById(id);
 
 $("n-totaal").textContent = nl(D.n_stemmingen);
+(function () { const GK = {coalitie: "var(--ink)", links: "var(--links)", midden: "var(--midden)", rechts: "var(--rechts)"}, GN = {coalitie: "Coalitie", links: "Links", midden: "Midden", rechts: "Rechts"}, z = D.zetels || {};
+  document.getElementById("groepen").innerHTML = ["coalitie", "links", "midden", "rechts"].map(g => `<div><b><span class="sw" style="background:${GK[g]}"></span>${GN[g]}</b>${D.indeling[g].filter(f => z[f]).join(", ")}</div>`).join(""); })();
 $("blok-noot").innerHTML = `<b>Let op:</b> het standpunt van "rechts" valt in ${D.volgt.PVV}% van de stemmingen samen met dat van de PVV, de grootste rechtse partij. JA21 (${D.volgt.JA21}%) en Groep Markuszower (${D.volgt["Groep Markuszower"]}%) volgen het rechtse blok minder vaak. Aan de linkerkant valt "links" in ${D.volgt.PRO}% samen met PRO. "Met rechts" betekent hier dus vooral "met de PVV", "met links" vooral "met PRO". In de vergelijking per fractie verderop staan JA21 en Groep Markuszower apart.`;
 document.querySelectorAll(".n-alle").forEach(e => e.textContent = nl(D.n_stemmingen));
 $("n-omstreden").textContent = nl(D.n_omstreden);

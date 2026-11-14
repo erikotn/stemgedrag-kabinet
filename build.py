@@ -301,6 +301,23 @@ tegen_eigen = [dict(datum=r["datum"], onderwerp=r["onderwerp"], url=r["url"], V=
 tegen_eigen.sort(key=lambda x: x["datum"], reverse=True)
 overlopers.sort(key=lambda x: x["datum"], reverse=True)
 
+# --- 9. extra per partij -------------------------------------------------------------
+AFW = {x["f"]: x for x in afwijken}
+for f, p in partijen.items():
+    eigen = [r for r in rijen if r["indiener"] == f]
+    groep = [g for g in HUIDIG if BLOK.get(g) == BLOK.get(f)]
+    groep_eigen = [r for r in rijen if r["indiener"] in groep]
+    p.update(
+        groep=BLOK.get(f), groepsleden=groep,
+        voorstellen=len(eigen), voorstellen_aan=sum(r["aangenomen"] for r in eigen),
+        groep_voorstellen=len(groep_eigen), groep_voorstellen_aan=sum(r["aangenomen"] for r in groep_eigen),
+        recent=[dict(datum=r["datum"], onderwerp=r["onderwerp"], url=r["url"], soort=r["soort"], aangenomen=r["aangenomen"], V=r["V"], T=r["T"])
+                for r in sorted(eigen, key=lambda r: r["datum"], reverse=True)[:3]],
+        afwijken=AFW.get(f, {}).get("pct"),
+        overlopers=[o for o in overlopers if o["f"] == f][:3],
+        tegen_eigen=[t for t in tegen_eigen if f in t["tegen"]],
+    )
+
 home = dict(
     stand=kab["stand"], gebouwd=kab["gebouwd"], start=START, n_stemmingen=len(rijen),
     ronde_dag=ronde_dag, ronde=ronde, rondes=rondes,

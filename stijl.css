@@ -127,3 +127,9 @@ nav.top .logo{font-weight:750;color:var(--ink);margin-right:auto;font-size:1rem}
 .tegel .g{font-size:2rem;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums} .tegel .t{color:var(--ink2);font-size:.88rem}
 .breadcrumb{font-size:.88rem;color:var(--ink3);margin-bottom:6px} .breadcrumb a{color:var(--ink2)}
 
+.uitleg{font-size:.92rem;color:var(--ink2);margin:0 0 12px;max-width:68ch}
+.groepen{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 6px;font-size:.85rem}
+.groepen div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.groepen b{display:flex;align-items:center;gap:6px;margin-bottom:2px}
+@media (max-width:700px){.groepen{grid-template-columns:1fr 1fr}}
+details > summary{cursor:pointer}
