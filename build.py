@@ -357,10 +357,13 @@ def schrijf(sjabloon, data, pad, titel, beschrijving, og, extra_ld=None):
 <meta property="og:url" content="{url}"><meta property="og:image" content="{BASIS}/og/{og}.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/stijl.css">
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>"""
     t = open(sjabloon).read()
     t = t.replace("{{HEAD}}", kop).replace("{{NAV}}", NAV).replace("{{STAND}}", html.escape(STAND_NL))
+    t = t.replace("</footer>", '<p class="hoekje">Een hoekje van <a href="https://erikmeijerink.nl">erikmeijerink.nl</a></p></footer>', 1)
     t = t.replace("/*DATA*/null", json.dumps(data, ensure_ascii=False).replace("</", "<\\/"))
     doel = SITE / pad.strip("/") / "index.html" if pad != "/" else SITE / "index.html"
     doel.parent.mkdir(parents=True, exist_ok=True)

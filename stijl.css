@@ -1,42 +1,26 @@
+/* Huisstijl van drentsetuinvogels.nl: grijsblauwe Drentse lucht, Literata, goudvinkrood als accent. */
 :root{
   color-scheme:light;
-  --bg:#fcfcfb; --card:#ffffff; --line:#e4e3df; --grid:#ecebe7;
-  --ink:#0b0b0b; --ink2:#52514e; --ink3:#7a7975;
+  --letter:'Literata',Georgia,serif; --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --bg:#e9eeef; --card:#f6f8f8; --line:#d2dadb; --grid:#dde3e4;
+  --ink:#1a2226; --ink2:#43505a; --ink3:#6c7980; --accent:#a8323f;
   --d66:#1baf7a; --cda:#eb6834; --vvd:#6250d6;
   --links:#e34948; --rechts:#2a78d6; --midden:#9a9890;
   --tint:42,120,214;
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    color-scheme:dark;
-    --bg:#1a1a19; --card:#222221; --line:#383835; --grid:#2e2e2c;
-    --ink:#f0efec; --ink2:#c3c2b7; --ink3:#93928b;
-    --d66:#199e70; --cda:#d95926; --vvd:#9085e9;
-    --links:#e66767; --rechts:#3987e5; --midden:#77766f;
-    --tint:57,135,229;
-  }
-}
-:root[data-theme="dark"]{
-  color-scheme:dark;
-  --bg:#1a1a19; --card:#222221; --line:#383835; --grid:#2e2e2c;
-  --ink:#f0efec; --ink2:#c3c2b7; --ink3:#93928b;
-  --d66:#199e70; --cda:#d95926; --vvd:#9085e9;
-  --links:#e66767; --rechts:#3987e5; --midden:#77766f;
-  --tint:57,135,229;
-}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--letter);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
 main{max-width:980px;margin:0 auto;padding:32px 16px 64px}
-h1{font-size:clamp(1.7rem,4vw,2.4rem);line-height:1.15;margin:0 0 8px;letter-spacing:-.01em}
+h1{font-size:clamp(1.9rem,4.4vw,2.8rem);font-weight:600;line-height:1.05;margin:0 0 10px;letter-spacing:-.025em}
 h2{font-size:1.3rem;margin:56px 0 6px}
 h3{font-size:1rem;margin:24px 0 8px}
 p{margin:0 0 12px;max-width:68ch}
 .lead{color:var(--ink2);font-size:1.08rem}
 .meta{color:var(--ink3);font-size:.88rem}
 .vraag{color:var(--ink2);margin-bottom:16px}
-a{color:inherit}
+a{color:var(--accent)} a:hover{color:var(--ink)}
 .dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:16px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:16px 0}
 .legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.9rem;color:var(--ink2);margin-bottom:8px}
 .legend span{display:flex;align-items:center;gap:6px}
 .chart{position:relative}
@@ -142,3 +126,22 @@ details > summary{cursor:pointer}
 nav.top .pbalk .in{gap:6px;font-size:inherit}
 @media (max-width:760px){nav.top .pbalk .in{flex-wrap:nowrap} nav.top .in{gap:4px 14px}}
 section[id]{scroll-margin-top:120px}
+
+/* --- aansluiting op drentsetuinvogels.nl --- */
+h2,h3{font-weight:600;letter-spacing:-.015em}
+.meta,.breadcrumb,.dleg,.legend,.pill{font-family:var(--mono);font-size:.78rem}
+h2.vind small,h2 small{font-family:var(--mono);font-weight:400;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+nav.top{background:var(--bg);border-bottom:1px solid var(--line)}
+nav.top .in{padding:14px 16px 10px;gap:6px}
+nav.top .logo{font-size:1.35rem;font-weight:600;letter-spacing:-.025em;color:var(--ink);margin-right:auto}
+nav.top .in > a:not(.logo){font-size:.9rem;color:var(--ink2);padding:5px 13px;border:1px solid var(--line);border-radius:999px}
+nav.top .in > a:not(.logo):hover{border-color:var(--ink2);color:var(--ink)}
+@media (max-width:560px){nav.top .in > a:not(.logo){font-size:.8rem;padding:4px 9px} nav.top .logo{width:100%;font-size:1.2rem}}
+.pbalk a{font-family:var(--letter);border-radius:999px}
+.pbalk .lbl{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.k4,.k3,.nk,.tegel,.kaart,.strip,.hero,.conclusie,.groepen div{border-radius:14px}
+.k4 .vr,.k3 .vr{font-family:var(--mono);font-weight:400;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.chart text{font-family:var(--mono)}
+footer{border-top:1px solid var(--ink);font-family:var(--letter);font-size:.88rem;color:var(--ink3)}
+footer a{color:var(--ink2);border-bottom:1px solid var(--line);text-decoration:none}
+.hoekje{margin:14px 0 0;font-size:.88rem;color:var(--ink3)}
