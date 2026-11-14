@@ -4,6 +4,8 @@ on:
   schedule:
     - cron: "0 5 * * *"   # dagelijks 06:00/07:00 Nederlandse tijd
   workflow_dispatch:
+  push:
+    branches: [main]
 
 env:
   PROJECT: stemgedrag-kabinet
@@ -35,7 +37,7 @@ jobs:
           if [ "$OUD" = "$NIEUW" ]; then echo "GEWIJZIGD=nee" >> "$GITHUB_ENV"; else echo "GEWIJZIGD=ja" >> "$GITHUB_ENV"; fi
 
       - name: Live zetten op Cloudflare Pages
-        if: env.GEWIJZIGD == 'ja' || github.event_name == 'workflow_dispatch'
+        if: env.GEWIJZIGD == 'ja' || github.event_name != 'schedule'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

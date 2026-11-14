@@ -106,6 +106,16 @@ footer{margin-top:56px;color:var(--ink3);font-size:.85rem;border-top:1px solid v
 .conclusie .partij h3{margin:0 0 4px;font-size:1.05rem;display:flex;align-items:center;gap:8px}
 .conclusie ul{margin:4px 0 0}
 .conclusie .let{color:var(--ink2);font-size:.9rem;margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.donuts{display:flex;flex-wrap:wrap;align-items:flex-start;gap:20px 28px;margin:6px 0 4px}
+.donut{width:160px;text-align:center}
+.donut svg{width:150px;height:150px;display:block;margin:0 auto}
+.donut .g{font-size:30px;font-weight:700;fill:var(--ink)} .donut .s{font-size:12px;fill:var(--ink2)}
+.donut .cap{font-size:.9rem;color:var(--ink2);margin-top:6px;line-height:1.35}
+.donut .cap b{color:var(--ink);display:flex;justify-content:center;align-items:center;gap:6px}
+.pijl{align-self:center;font-size:1.6rem;color:var(--ink3);margin-top:-30px}
+.dleg{display:flex;flex-wrap:wrap;gap:14px;font-size:.85rem;color:var(--ink2);margin:10px 0 0}
+@media (max-width:560px){.donuts{gap:16px 4%}.donut{width:46%}.donut svg{width:100%;height:auto;max-width:140px}.donut .cap{font-size:.82rem}.pijl{display:none}}
+details.onder{margin-top:14px} details.onder summary{font-weight:600;color:var(--ink)}
 .bkop{color:var(--ink3);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;margin:18px 0 0}
 @media (max-width:560px){.brow{grid-template-columns:1fr;gap:4px}}
 </style>
@@ -366,18 +376,38 @@ function conclusie() {
   const trend = kw.length < 2 || Math.abs(verschuiving) < 10 ? "Dat beeld is sinds de start niet wezenlijk veranderd." :
     `In het ${qNaam(q1)} was dat ${c1.links || 0} keer via links tegen ${c1.rechts || 0} keer via rechts; in het ${qNaam(qn)}${qn === `${D.stand.slice(0, 4)} K${Math.floor((+D.stand.slice(5, 7) - 1) / 3) + 1}` ? " (tot nu toe)" : ""} ${cn.links || 0} tegen ${cn.rechts || 0}. Het kabinet is dus ${positie(aandeel(c1)) === positie(aandeel(cn)) ? `verder naar ${verschuiving > 0 ? "links" : "rechts"}` : `van ${positie(aandeel(c1))} naar ${positie(aandeel(cn))}`} opgeschoven.`;
 
+  const donut = (parts, groot, klein, cap) => {
+    const tot = parts.reduce((a, p) => a + p.v, 0) || 1, r = 56, C = 2 * Math.PI * r;
+    let off = 0, sl = "";
+    for (const p of parts) { if (!p.v) continue; const len = Math.max(0, p.v / tot * C - 2);
+      sl += `<circle cx="75" cy="75" r="${r}" fill="none" stroke="${p.kl}" stroke-width="24" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-off}" transform="rotate(-90 75 75)" data-tip="${p.tip}"/>`; off += p.v / tot * C; }
+    return `<div class="donut"><svg viewBox="0 0 150 150" role="img" aria-label="${cap.replace(/<[^>]+>/g, "")}">${sl}<text x="75" y="${klein ? 78 : 86}" text-anchor="middle" class="g">${groot}</text>${klein ? `<text x="75" y="98" text-anchor="middle" class="s">${klein}</text>` : ""}</svg><div class="cap">${cap}</div></div>`;
+  };
+  const LR = (l, r, wie) => [{v: l, kl: "var(--links)", tip: `${wie}: ${l} met links`}, {v: r, kl: "var(--rechts)", tip: `${wie}: ${r} met rechts`}];
+  const leg = (...k) => `<div class="dleg">${k.map(x => `<span><span class="sw" style="background:var(--${x})"></span>${{links: "links", rechts: "rechts", midden: "breed / links en rechts eens"}[x]}</span>`).join("")}</div>`;
+  const partijDonut = (f, o) => { const t = D.totaal[f];
+    return donut(LR(t.links, t.n - t.links, f), `${o.L}%`, "met links", `<b>${dot(f)}${f}</b>${o.tekst}`); };
+  const qLabel = q => ["1e", "2e", "3e", "4e"][+q.slice(-1) - 1] + " kwartaal" + (q === `${D.stand.slice(0, 4)} K${Math.floor((+D.stand.slice(5, 7) - 1) / 3) + 1}` ? " (tot nu toe)" : "");
   const oD = oordeel("D66"), oC = oordeel("CDA"), oV = oordeel("VVD");
   const kort = oD.kort === oC.kort ? `Voor D66 en het CDA ${oD.kort === "ja" ? "wel" : "niet"}.` : `Voor D66 ${oD.kort === "ja" ? "wel" : "niet"}, voor het CDA ${oC.kort === "ja" ? "wel" : "niet"}.`;
   const volgorde = [...P].sort((a, b) => D.totaal[b].links / D.totaal[b].n - D.totaal[a].links / D.totaal[a].n), iV = volgorde.indexOf("VVD");
   const rang = iV === P.length - 1 ? "het minst vaak met links" : iV === 0 ? "het vaakst met links" : "vaker met links dan " + naam(volgorde[iV + 1]) + ", minder vaak dan " + naam(volgorde[iV - 1]);
   $("conclusie").innerHTML = `
-    <section class="conclusie"><h2>Het kabinet als geheel</h2><p class="kort">Het kabinet vindt zijn meerderheid ${richting}.</p><ul>
+    <section class="conclusie"><h2>Het kabinet als geheel</h2><p class="kort">Het kabinet vindt zijn meerderheid ${richting}.</p>
+      <div class="donuts">
+        ${donut([{v: A.links || 0, kl: "var(--links)", tip: `alleen via links: ${nl(A.links || 0)}`}, {v: A.breed || 0, kl: "var(--midden)", tip: `breed: ${nl(A.breed || 0)}`}, {v: A.rechts || 0, kl: "var(--rechts)", tip: `alleen via rechts: ${nl(A.rechts || 0)}`}], nl(tot), "stemmingen", `<b>Alle meerderheden</b>${pct(A.links || 0, tot)}% via links · ${pct(A.rechts || 0, tot)}% via rechts`)}
+        ${kw.length > 1 ? donut(LR(c1.links || 0, c1.rechts || 0, qLabel(q1)), `${Math.round(100 * aandeel(c1))}%`, "via links", `<b>${qLabel(q1)}</b>alleen via links of rechts`) + `<div class="pijl">→</div>` + donut(LR(cn.links || 0, cn.rechts || 0, qLabel(qn)), `${Math.round(100 * aandeel(cn))}%`, "via links", `<b>${qLabel(qn)}</b>alleen via links of rechts`) : ""}
+      </div>${leg("links", "midden", "rechts")}
+      <details class="onder"><summary>Onderbouwing</summary><ul>
       <li>Als D66, CDA en VVD samen vóór stemmen, komt ${pct(A.links || 0, tot)}% van de meerderheden alleen via links en ${pct(A.rechts || 0, tot)}% alleen via rechts; ${pct(A.breed || 0, tot)}% heeft brede steun.</li>
-      <li>${trend}</li></ul></section>
+      <li>${trend}</li></ul></details></section>
     <section class="conclusie"><h2>Kijken D66 en CDA naar links? De conclusie</h2><p class="kort">${kort}</p>
-      ${partij("D66")}${partij("CDA")}</section>
+      <div class="donuts">${partijDonut("D66", oD)}${partijDonut("CDA", oC)}</div>${leg("links", "rechts")}
+      <p class="meta" style="margin-top:8px">Bij stemmingen waarin links en rechts tegenover elkaar stonden: hoe vaak koos de partij de kant van links (rood) of rechts (blauw)?</p>
+      <details class="onder"><summary>Onderbouwing</summary>${partij("D66")}${partij("CDA")}</details></section>
     <section class="conclusie"><h2>En de VVD dan?</h2><p class="kort">De VVD ${oV.tekst} en stemt van de drie coalitiepartijen ${rang}.</p>
-      ${partij("VVD", false)}
+      <div class="donuts">${partijDonut("VVD", oV)}${(() => { const c = D.split_tel.VVD || {}; return donut([{v: c.links || 0, kl: "var(--links)", tip: `alleen, aan linkse kant: ${c.links || 0}`}, {v: c["–"] || 0, kl: "var(--midden)", tip: `alleen, links en rechts eens: ${c["–"] || 0}`}, {v: c.rechts || 0, kl: "var(--rechts)", tip: `alleen, aan rechtse kant: ${c.rechts || 0}`}], `${(c.links || 0) + (c["–"] || 0) + (c.rechts || 0)}×`, "alleen", `<b>Stond alleen in de coalitie</b>${c.rechts || 0}× aan de rechtse kant`); })()}</div>${leg("links", "midden", "rechts")}
+      <details class="onder"><summary>Onderbouwing</summary>${partij("VVD", false)}</details>
       <p class="let"><b>Let op:</b> dit gaat over stemgedrag, niet over met wie partijen onderhandelden. "Met links" betekent vaak ook "tegen de PVV", omdat PVV en Groep Markuszower het grootste deel van het rechtse blok vormen. En een motie over een detail telt even zwaar als een belangrijke wet. De oordelen ("duidelijk naar links", "in het midden") volgen uit vaste regels, die onder Werkwijze staan.</p></section>`;
 }
 conclusie();
