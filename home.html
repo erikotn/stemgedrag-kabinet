@@ -45,6 +45,9 @@ h2.vind small{display:block;font-size:.78rem;font-weight:650;text-transform:uppe
 details.meer{margin-top:12px} details.meer > summary{font-weight:600}
 .dossier{display:block;margin-top:56px;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--ink);border-radius:12px;padding:16px 18px;text-decoration:none;color:var(--ink)}
 .dossier b{font-size:1.1rem}
+.dknop{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:14px;padding:18px 20px;border-radius:12px;background:var(--ink);color:var(--bg);text-decoration:none}
+.dknop b{display:block;font-size:1.25rem} .dknop small{display:block;opacity:.8;margin-top:2px;font-size:.92rem} .dknop .pijl{font-size:1.8rem;line-height:1}
+.dknop:hover{opacity:.92}
 .uitleg{font-size:.92rem;color:var(--ink2);margin:-4px 0 12px;max-width:68ch}
 .groepen{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 6px;font-size:.85rem}
 .groepen div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
@@ -76,7 +79,7 @@ details.meer{margin-top:12px} details.meer > summary{font-weight:600}
   <h2 class="vind"><small>Waar haalt het kabinet zijn meerderheid?</small><span id="kab-kop"></span></h2>
   <p class="uitleg" id="kab-uitleg"></p>
   <div class="card"><div class="split" id="kab-split" style="height:30px"></div></div>
-  <p><a href="/kabinet/">Meer in het dossier kabinet-Jetten →</a></p>
+  <a class="dknop" href="/kabinet/"><span><b>Dossier kabinet-Jetten</b><small>Kijken D66 en CDA naar links? Wat doet de VVD? En JA21?</small></span><span class="pijl">→</span></a>
 </section>
 
 <section id="bondjes">

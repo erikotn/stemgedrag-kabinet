@@ -141,3 +141,4 @@ details > summary{cursor:pointer}
 .pbalk .lbl{flex:none;align-self:center;font-size:.78rem;color:var(--ink3);margin-right:2px}
 nav.top .pbalk .in{gap:6px;font-size:inherit}
 @media (max-width:760px){nav.top .pbalk .in{flex-wrap:nowrap} nav.top .in{gap:4px 14px}}
+section[id]{scroll-margin-top:120px}

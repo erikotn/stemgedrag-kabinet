@@ -339,7 +339,7 @@ home = dict(
 BASIS = "https://stemgedrag-kabinet.pages.dev"   # wordt https://dekamerstemt.nl zodra het domein gekoppeld is
 STAND_NL = dt.date.fromisoformat(kab["stand"]).strftime("%-d-%-m-%Y")
 KLEUR = {"D66": "var(--d66)", "CDA": "var(--cda)", "VVD": "var(--vvd)"}
-NAV = open("nav.html").read().replace("{{PARTIJEN}}", '<span class="lbl">Partij:</span>' + "".join(
+NAV = open("nav.html").read().replace("{{PARTIJEN}}", '<span class="lbl">Kies een partij:</span>' + "".join(
     f'<a href="/partij/{p["slug"]}/"><span class="dot" style="background:{KLEUR.get(f, {"links": "var(--links)", "rechts": "var(--rechts)"}.get(p["blok"], "var(--midden)"))}"></span>{html.escape(f)}</a>'
     for f, p in partijen.items()))
 pagina_lijst = []
