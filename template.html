@@ -423,6 +423,7 @@ function conclusie() {
   }
   $("conclusie").innerHTML = `
     <section class="conclusie"><h2>Het kabinet als geheel</h2><p class="kort">Het kabinet vindt zijn meerderheid ${richting}.</p>
+      <p class="meta">Van alle ${nl(D.n_stemmingen)} stemmingen stemden D66, CDA en VVD <b>${nl(tot)}</b> keer samen vóór, ${nl(D.n_eensgezind - tot)} keer samen tegen en ${nl(D.splits.length)} keer verdeeld. Een meerderheid zoeken doe je voor iets wat je wilt aannemen; daarom gaan de taarten hieronder over de ${nl(tot)} keer dat de coalitie samen vóór stemde.</p>
       <div class="donuts">
         ${donut([{v: A.links || 0, kl: "var(--links)", tip: `alleen via links: ${nl(A.links || 0)}`}, {v: A.breed || 0, kl: "var(--midden)", tip: `breed: ${nl(A.breed || 0)}`}, {v: A.rechts || 0, kl: "var(--rechts)", tip: `alleen via rechts: ${nl(A.rechts || 0)}`}], nl(tot), "stemmingen", `<b>Alle meerderheden</b>${pct(A.links || 0, tot)}% via links · ${pct(A.rechts || 0, tot)}% via rechts`)}
         ${kw.length > 1 ? drie(c1, qLabel(q1)) + `<div class="pijl">→</div>` + drie(cn, qLabel(qn)) : ""}
