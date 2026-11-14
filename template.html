@@ -157,16 +157,16 @@ details.onder{margin-top:14px} details.onder summary{font-weight:600;color:var(-
 
 <section>
   <h2>Als de coalitie verdeeld is</h2>
-  <p class="vraag">Bij <span id="n-splits"></span> stemmingen stemde één coalitiepartij anders dan de andere twee. Wie stond dan alleen, en aan welke kant?</p>
+  <p class="vraag">Bij <span id="n-splits"></span> stemmingen stemde één coalitiepartij anders dan de andere twee. Welke partij week af, en stemde die dan met links of met rechts mee?</p>
   <div class="card">
-    <div class="legend"><span><span class="sw" style="background:var(--links)"></span>alleen, aan linkse kant</span><span><span class="sw" style="background:var(--midden)"></span>links en rechts waren het eens</span><span><span class="sw" style="background:var(--rechts)"></span>alleen, aan rechtse kant</span></div>
+    <div class="legend"><span><span class="sw" style="background:var(--links)"></span>week af en stemde met links mee</span><span><span class="sw" style="background:var(--midden)"></span>links en rechts waren het eens</span><span><span class="sw" style="background:var(--rechts)"></span>week af en stemde met rechts mee</span></div>
     <div id="splitcount"></div>
   </div>
   <details><summary>Als tabel</summary><div class="scroll" id="tabel-split-tel"></div></details>
   <h3>Alle stemmingen met een verdeelde coalitie</h3>
   <div class="filters">
     <input id="zoek" type="search" placeholder="Zoek op onderwerp" aria-label="Zoek op onderwerp">
-    <select id="f-alleen" aria-label="Wie stond alleen"><option value="">Iedereen</option><option>D66</option><option>CDA</option><option>VVD</option></select>
+    <select id="f-alleen" aria-label="Wie week af"><option value="">Iedereen</option><option>D66</option><option>CDA</option><option>VVD</option></select>
     <select id="f-soort" aria-label="Soort"><option value="">Alle soorten</option><option>Motie</option><option>Amendement</option><option>Wet</option></select>
   </div>
   <div class="scroll" id="tabel-splits"></div>
@@ -290,9 +290,9 @@ $("splitbars").innerHTML = P.map(f => {
   const max = Math.max(...P.map(tot));
   $("splitcount").innerHTML = P.map(f => { const c = t[f] || {};
     return `<div class="crow"><div class="naam" style="font-weight:600;display:flex;align-items:center;gap:6px">${dot(f)}${f}</div>
-      <div><div class="sbar" style="width:${100 * tot(f) / max}%">${seg(c.links || 0, "var(--links)", `<b>${f}</b> alleen, aan linkse kant: ${c.links || 0}×`)}${seg(c["–"] || 0, "var(--midden)", `<b>${f}</b> alleen, links en rechts eens: ${c["–"] || 0}×`)}${seg(c.rechts || 0, "var(--rechts)", `<b>${f}</b> alleen, aan rechtse kant: ${c.rechts || 0}×`)}</div></div>
+      <div><div class="sbar" style="width:${100 * tot(f) / max}%">${seg(c.links || 0, "var(--links)", `<b>${f}</b> week af, met links mee: ${c.links || 0}×`)}${seg(c["–"] || 0, "var(--midden)", `<b>${f}</b> week af, links en rechts eens: ${c["–"] || 0}×`)}${seg(c.rechts || 0, "var(--rechts)", `<b>${f}</b> week af, met rechts mee: ${c.rechts || 0}×`)}</div></div>
       <div class="tot">${tot(f)}×</div></div>`; }).join("");
-  let s = `<table><tr><th>Stond alleen</th><th class="num">Aan linkse kant</th><th class="num">Links en rechts eens</th><th class="num">Aan rechtse kant</th><th class="num">Totaal</th></tr>`;
+  let s = `<table><tr><th>Week af</th><th class="num">Met links mee</th><th class="num">Links en rechts eens</th><th class="num">Met rechts mee</th><th class="num">Totaal</th></tr>`;
   for (const f of P) { const c = t[f] || {}; s += `<tr><td>${f}</td><td class="num">${c.links || 0}</td><td class="num">${c["–"] || 0}</td><td class="num">${c.rechts || 0}</td><td class="num v">${tot(f)}</td></tr>`; }
   $("tabel-split-tel").innerHTML = s + "</table>";
 })();
@@ -345,9 +345,10 @@ function conclusie() {
   const groep = g => D.indeling.links.includes(g) ? "links" : D.indeling.rechts.includes(g) ? "rechts" : "midden";
   const oordeel = f => {
     const t = D.totaal[f], L = pct(t.links, t.n), c = D.split_tel[f] || {}, aL = c.links || 0, aR = c.rechts || 0;
-    if (L >= 65 && aL > aR) return {kort: "ja", tekst: "neigt duidelijk naar links", L, aL, aR};
-    if (L < 50 && aR > aL) return {kort: "nee", tekst: "neigt naar rechts", L, aL, aR};
-    return {kort: "nee", tekst: "zit in het midden", L, aL, aR};
+    if (L >= 65 && aL > aR) return {kort: "duidelijk wel", tekst: "neigt duidelijk naar links", L, aL, aR};
+    if (L >= 55) return {kort: "een beetje", tekst: "neigt iets naar links", L, aL, aR};
+    if (L < 50 && aR > aL) return {kort: "niet", tekst: "neigt naar rechts", L, aL, aR};
+    return {kort: "niet", tekst: "zit in het midden", L, aL, aR};
   };
   const top = (f, n) => Object.entries(D.gelijk[f]).filter(([g, v]) => v.n && g !== "GroenLinks-PvdA")
     .map(([g, v]) => [g, pct(v.zelfde, v.n)]).sort((a, b) => b[1] - a[1]).slice(0, n);
@@ -358,11 +359,11 @@ function conclusie() {
   const partij = (f, janee = true) => {
     const o = oordeel(f), t3 = top(f, 3), pro = pct(D.gelijk[f].PRO.zelfde, D.gelijk[f].PRO.n), pvv = pct(D.gelijk[f].PVV.zelfde, D.gelijk[f].PVV.n);
     const mm = maanden(f), tot = Object.values(D.split_tel[f] || {}).reduce((a, b) => a + b, 0);
-    const alleen = o.aL > o.aR ? `vaker aan de linkse kant (${o.aL}) dan aan de rechtse (${o.aR})` : o.aR > o.aL ? `vaker aan de rechtse kant (${o.aR}) dan aan de linkse (${o.aL})` : `even vaak links als rechts (${o.aL})`;
-    return `<div class="partij">${janee ? `<h3>${dot(f)}${f}: ${o.kort === "ja" ? "ja, " : "nee, "}${o.tekst}</h3>` : ""}<ul>
+    const aE = (D.split_tel[f] || {})["–"] || 0, anderen = P.filter(x => x !== f).map(naam).join(" en ");
+    return `<div class="partij">${janee ? `<h3>${dot(f)}${f}: ${o.tekst}</h3>` : ""}<ul>
       <li>Als links en rechts tegenover elkaar staan, kiest ${naam(f)} in <b>${o.L}%</b> van de gevallen links${mm.length > 2 ? ` (per maand tussen ${Math.min(...mm)}% en ${Math.max(...mm)}%)` : ""}. Ter vergelijking: ${P.filter(x => x !== f).map(x => `${x} ${pct(D.totaal[x].links, D.totaal[x].n)}%`).join(", ")}.</li>
       <li>Stemt het vaakst hetzelfde als ${lijst(t3.map(([g, p]) => `${g} (${p}%)`))}. ${t3.some(([g]) => g === "PRO") ? "" : `Met PRO ${pro}%, `}${t3.some(([g]) => g === "PRO") ? "Met" : "met"} de PVV ${pvv}%.</li>
-      <li>Stond ${tot} keer alleen binnen de coalitie, ${alleen}.</li></ul></div>`;
+      <li>Stemde ${tot} keer anders dan ${anderen} samen. Dan stemde ${naam(f)} ${o.aL >= o.aR ? `${o.aL} keer met links mee en ${o.aR} keer met rechts` : `${o.aR} keer met rechts mee en ${o.aL} keer met links`}; de overige ${aE} keer waren links en rechts het onderling eens.</li></ul></div>`;
   };
 
   // Kabinet als geheel
@@ -389,7 +390,7 @@ function conclusie() {
     return donut(LR(t.links, t.n - t.links, f), `${o.L}%`, "met links", `<b>${dot(f)}${f}</b>${o.tekst}`); };
   const qLabel = q => ["1e", "2e", "3e", "4e"][+q.slice(-1) - 1] + " kwartaal" + (q === `${D.stand.slice(0, 4)} K${Math.floor((+D.stand.slice(5, 7) - 1) / 3) + 1}` ? " (tot nu toe)" : "");
   const oD = oordeel("D66"), oC = oordeel("CDA"), oV = oordeel("VVD");
-  const kort = oD.kort === oC.kort ? `Voor D66 en het CDA ${oD.kort === "ja" ? "wel" : "niet"}.` : `Voor D66 ${oD.kort === "ja" ? "wel" : "niet"}, voor het CDA ${oC.kort === "ja" ? "wel" : "niet"}.`;
+  const kort = oD.kort === oC.kort ? `Voor D66 en het CDA allebei ${oD.kort}.` : `Voor D66 ${oD.kort}, voor het CDA ${oC.kort}.`;
   const volgorde = [...P].sort((a, b) => D.totaal[b].links / D.totaal[b].n - D.totaal[a].links / D.totaal[a].n), iV = volgorde.indexOf("VVD");
   const rang = iV === P.length - 1 ? "het minst vaak met links" : iV === 0 ? "het vaakst met links" : "vaker met links dan " + naam(volgorde[iV + 1]) + ", minder vaak dan " + naam(volgorde[iV - 1]);
   $("conclusie").innerHTML = `
@@ -406,9 +407,9 @@ function conclusie() {
       <p class="meta" style="margin-top:8px">Bij stemmingen waarin links en rechts tegenover elkaar stonden: hoe vaak koos de partij de kant van links (rood) of rechts (blauw)?</p>
       <details class="onder"><summary>Onderbouwing</summary>${partij("D66")}${partij("CDA")}</details></section>
     <section class="conclusie"><h2>En de VVD dan?</h2><p class="kort">De VVD ${oV.tekst} en stemt van de drie coalitiepartijen ${rang}.</p>
-      <div class="donuts">${partijDonut("VVD", oV)}${(() => { const c = D.split_tel.VVD || {}; return donut([{v: c.links || 0, kl: "var(--links)", tip: `alleen, aan linkse kant: ${c.links || 0}`}, {v: c["–"] || 0, kl: "var(--midden)", tip: `alleen, links en rechts eens: ${c["–"] || 0}`}, {v: c.rechts || 0, kl: "var(--rechts)", tip: `alleen, aan rechtse kant: ${c.rechts || 0}`}], `${(c.links || 0) + (c["–"] || 0) + (c.rechts || 0)}×`, "alleen", `<b>Stond alleen in de coalitie</b>${c.rechts || 0}× aan de rechtse kant`); })()}</div>${leg("links", "midden", "rechts")}
+      <div class="donuts">${partijDonut("VVD", oV)}${(() => { const c = D.split_tel.VVD || {}; return donut([{v: c.links || 0, kl: "var(--links)", tip: `met links mee: ${c.links || 0}×`}, {v: c["–"] || 0, kl: "var(--midden)", tip: `links en rechts waren het eens: ${c["–"] || 0}×`}, {v: c.rechts || 0, kl: "var(--rechts)", tip: `met rechts mee: ${c.rechts || 0}×`}], `${(c.links || 0) + (c["–"] || 0) + (c.rechts || 0)}×`, "anders", `<b>Stemde anders dan D66 en het CDA</b>${c.rechts || 0}× met rechts mee, ${c.links || 0}× met links`); })()}</div>${leg("links", "midden", "rechts")}
       <details class="onder"><summary>Onderbouwing</summary>${partij("VVD", false)}</details>
-      <p class="let"><b>Let op:</b> dit gaat over stemgedrag, niet over met wie partijen onderhandelden. "Met links" betekent vaak ook "tegen de PVV", omdat PVV en Groep Markuszower het grootste deel van het rechtse blok vormen. En een motie over een detail telt even zwaar als een belangrijke wet. De oordelen ("duidelijk naar links", "in het midden") volgen uit vaste regels, die onder Werkwijze staan.</p></section>`;
+      <p class="let"><b>Let op:</b> dit gaat over stemgedrag, niet over met wie partijen onderhandelden. "Met links" betekent vaak ook "tegen de PVV", omdat PVV en Groep Markuszower het grootste deel van het rechtse blok vormen. En een motie over een detail telt even zwaar als een belangrijke wet. De oordelen ("duidelijk naar links", "iets naar links", "in het midden") volgen uit vaste regels, die onder Werkwijze staan.</p></section>`;
 }
 conclusie();
 
@@ -419,7 +420,7 @@ $("werkwijze").innerHTML = [
   `<b>Standpunt van een blok:</b> de kant waar de meeste zetels van dat blok stemden. Een stemming is "omstreden" als de meerderheid van links anders stemde dan de meerderheid van rechts.`,
   `<b>Hoofdelijke stemmingen:</b> per Kamerlid geteld; het standpunt van een fractie is dan de kant van de meerderheid van haar leden.`,
   `<b>Wat dit niet meet:</b> wie een voorstel indiende, hoe zwaar een stemming politiek weegt, en of iets "te veel" is. Elke stemming telt even zwaar; een motie over een detail weegt even zwaar als een wet.`,
-  `<b>Conclusie bovenaan:</b> wordt bij elke update opnieuw uit de cijfers opgesteld met vaste regels. Een partij "neigt duidelijk naar links" als ze bij omstreden stemmingen in minstens 65% van de gevallen links kiest én als ze, wanneer ze alleen staat in de coalitie, vaker aan de linkse dan aan de rechtse kant staat. Ze "neigt naar rechts" bij minder dan 50% links én vaker alleen aan de rechtse kant. Anders "zit ze in het midden". Het kabinet vindt zijn meerderheid "net iets vaker" via een kant als die minstens 10% vaker voorkomt, "duidelijk vaker" vanaf 50%; het is "opgeschoven" als het aandeel links (van de stemmingen die alleen via links of alleen via rechts gingen) tussen het eerste en het laatste kwartaal minstens 10 procentpunt verschilt. Boven 55% heet dat aandeel "links", onder 45% "rechts", daartussen "het midden".`,
+  `<b>Conclusie bovenaan:</b> wordt bij elke update opnieuw uit de cijfers opgesteld met vaste regels. Een partij "neigt duidelijk naar links" als ze bij omstreden stemmingen in minstens 65% van de gevallen links kiest én als ze, wanneer ze anders stemt dan de andere twee coalitiepartijen, vaker met links dan met rechts meestemt. Ze "neigt iets naar links" bij 55% of meer. Ze "neigt naar rechts" bij minder dan 50% links én als ze bij afwijken vaker met rechts meestemt. Anders "zit ze in het midden". Het kabinet vindt zijn meerderheid "net iets vaker" via een kant als die minstens 10% vaker voorkomt, "duidelijk vaker" vanaf 50%; het is "opgeschoven" als het aandeel links (van de stemmingen die alleen via links of alleen via rechts gingen) tussen het eerste en het laatste kwartaal minstens 10 procentpunt verschilt. Boven 55% heet dat aandeel "links", onder 45% "rechts", daartussen "het midden".`,
   `<b>Controle:</b> bij elke update wordt gecontroleerd dat alle fracties samen 150 zetels hebben, dat er geen onbekende fracties zijn en dat er niet minder stemmingen zijn dan de vorige keer. Faalt een controle, dan blijft de vorige versie online staan.`,
 ].map(t => `<li>${t}</li>`).join("");
 </script>
