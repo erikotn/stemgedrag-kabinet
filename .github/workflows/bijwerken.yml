@@ -1,0 +1,44 @@
+name: Bijwerken
+
+on:
+  schedule:
+    - cron: "0 5 * * *"   # dagelijks 06:00/07:00 Nederlandse tijd
+  workflow_dispatch:
+
+env:
+  PROJECT: stemgedrag-kabinet
+  SITE_URL: https://stemgedrag-kabinet.pages.dev
+
+jobs:
+  bouw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Vorige versie ophalen (voor de datacheck)
+        run: |
+          mkdir -p site
+          curl -sf "$SITE_URL/data.json" -o site/data.json || rm -f site/data.json
+
+      - name: Data ophalen bij de Tweede Kamer
+        run: python ophalen.py
+
+      - name: Pagina bouwen en data controleren
+        run: |
+          OUD=$(test -f site/data.json && python -c 'import json;d=json.load(open("site/data.json"));print(d["n_stemmingen"],d["stand"])' || echo geen)
+          python build.py
+          NIEUW=$(python -c 'import json;d=json.load(open("site/data.json"));print(d["n_stemmingen"],d["stand"])')
+          echo "oud: $OUD  nieuw: $NIEUW"
+          if [ "$OUD" = "$NIEUW" ]; then echo "GEWIJZIGD=nee" >> "$GITHUB_ENV"; else echo "GEWIJZIGD=ja" >> "$GITHUB_ENV"; fi
+
+      - name: Live zetten op Cloudflare Pages
+        if: env.GEWIJZIGD == 'ja' || github.event_name == 'workflow_dispatch'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          preCommands: npx wrangler pages project list | grep -q " ${{ env.PROJECT }} " || npx wrangler pages project create ${{ env.PROJECT }} --production-branch=main
+          command: pages deploy site --project-name=${{ env.PROJECT }} --branch=main
