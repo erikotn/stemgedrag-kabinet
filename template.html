@@ -99,7 +99,7 @@ footer{margin-top:56px;color:var(--ink3);font-size:.85rem;border-top:1px solid v
 .hero .c.mid{text-align:center} .hero .c.r{text-align:right}
 .hero .sbar{height:18px;margin-top:18px}
 @media (max-width:560px){.hero .c .t{font-size:.82rem}}
-.conclusie{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--ink);border-radius:12px;padding:20px 22px;margin:28px 0 0}
+.conclusie{background:var(--card);border:1px solid var(--line);border-left:6px solid var(--ink);border-radius:12px;padding:20px 22px;margin:20px 0 0}
 .conclusie h2{margin:0 0 4px;font-size:1.05rem;color:var(--ink2);font-weight:600}
 .conclusie .kort{font-size:clamp(1.25rem,3vw,1.6rem);font-weight:650;line-height:1.3;margin:0 0 14px;max-width:none}
 .conclusie .partij{margin:14px 0 0}
@@ -118,7 +118,7 @@ footer{margin-top:56px;color:var(--ink3);font-size:.85rem;border-top:1px solid v
   <p class="meta">Stand: stemmingen tot en met {{STAND}} · <span id="n-totaal"></span> stemmingen · bron: open data van de Tweede Kamer · wordt dagelijks bijgewerkt</p>
 </header>
 
-<section class="conclusie" id="conclusie"></section>
+<div id="conclusie"></div>
 
 <section>
   <h2>Waar haalt het kabinet zijn meerderheid?</h2>
@@ -342,15 +342,15 @@ function conclusie() {
   const top = (f, n) => Object.entries(D.gelijk[f]).filter(([g, v]) => v.n && g !== "GroenLinks-PvdA")
     .map(([g, v]) => [g, pct(v.zelfde, v.n)]).sort((a, b) => b[1] - a[1]).slice(0, n);
   const lijst = a => a.length > 1 ? a.slice(0, -1).join(", ") + " en " + a[a.length - 1] : a[0];
-  const naam = f => f === "CDA" ? "het CDA" : f;
+  const naam = f => f === "CDA" ? "het CDA" : f === "VVD" ? "de VVD" : f;
   const maanden = f => D.per_maand[f].filter(m => m.n >= 20).map(m => pct(m.links, m.n));
 
-  const partij = f => {
+  const partij = (f, janee = true) => {
     const o = oordeel(f), t3 = top(f, 3), pro = pct(D.gelijk[f].PRO.zelfde, D.gelijk[f].PRO.n), pvv = pct(D.gelijk[f].PVV.zelfde, D.gelijk[f].PVV.n);
     const mm = maanden(f), tot = Object.values(D.split_tel[f] || {}).reduce((a, b) => a + b, 0);
     const alleen = o.aL > o.aR ? `vaker aan de linkse kant (${o.aL}) dan aan de rechtse (${o.aR})` : o.aR > o.aL ? `vaker aan de rechtse kant (${o.aR}) dan aan de linkse (${o.aL})` : `even vaak links als rechts (${o.aL})`;
-    return `<div class="partij"><h3>${dot(f)}${f}: ${o.kort === "ja" ? "ja" : "nee"}, ${o.tekst}</h3><ul>
-      <li>Als links en rechts tegenover elkaar staan, kiest ${naam(f)} in <b>${o.L}%</b> van de gevallen links${mm.length > 2 ? ` (per maand tussen ${Math.min(...mm)}% en ${Math.max(...mm)}%)` : ""}. Ter vergelijking: VVD ${pct(D.totaal.VVD.links, D.totaal.VVD.n)}%.</li>
+    return `<div class="partij">${janee ? `<h3>${dot(f)}${f}: ${o.kort === "ja" ? "ja, " : "nee, "}${o.tekst}</h3>` : ""}<ul>
+      <li>Als links en rechts tegenover elkaar staan, kiest ${naam(f)} in <b>${o.L}%</b> van de gevallen links${mm.length > 2 ? ` (per maand tussen ${Math.min(...mm)}% en ${Math.max(...mm)}%)` : ""}. Ter vergelijking: ${P.filter(x => x !== f).map(x => `${x} ${pct(D.totaal[x].links, D.totaal[x].n)}%`).join(", ")}.</li>
       <li>Stemt het vaakst hetzelfde als ${lijst(t3.map(([g, p]) => `${g} (${p}%)`))}. ${t3.some(([g]) => g === "PRO") ? "" : `Met PRO ${pro}%, `}${t3.some(([g]) => g === "PRO") ? "Met" : "met"} de PVV ${pvv}%.</li>
       <li>Stond ${tot} keer alleen binnen de coalitie, ${alleen}.</li></ul></div>`;
   };
@@ -366,15 +366,19 @@ function conclusie() {
   const trend = kw.length < 2 || Math.abs(verschuiving) < 10 ? "Dat beeld is sinds de start niet wezenlijk veranderd." :
     `In het ${qNaam(q1)} was dat ${c1.links || 0} keer via links tegen ${c1.rechts || 0} keer via rechts; in het ${qNaam(qn)}${qn === `${D.stand.slice(0, 4)} K${Math.floor((+D.stand.slice(5, 7) - 1) / 3) + 1}` ? " (tot nu toe)" : ""} ${cn.links || 0} tegen ${cn.rechts || 0}. Het kabinet is dus ${positie(aandeel(c1)) === positie(aandeel(cn)) ? `verder naar ${verschuiving > 0 ? "links" : "rechts"}` : `van ${positie(aandeel(c1))} naar ${positie(aandeel(cn))}`} opgeschoven.`;
 
-  const oD = oordeel("D66"), oC = oordeel("CDA");
-  const kort = (oD.kort === oC.kort ? `Voor D66 en het CDA ${oD.kort === "ja" ? "wel" : "niet"}.` : `Voor D66 ${oD.kort === "ja" ? "wel" : "niet"}, voor het CDA ${oC.kort === "ja" ? "wel" : "niet"}.`) +
-    ` Het kabinet als geheel vindt zijn meerderheid ${richting}.`;
-  $("conclusie").innerHTML = `<h2>Kijken D66 en CDA naar links? De conclusie</h2><p class="kort">${kort}</p>
-    ${partij("D66")}${partij("CDA")}
-    <div class="partij"><h3>Het kabinet als geheel</h3><ul>
+  const oD = oordeel("D66"), oC = oordeel("CDA"), oV = oordeel("VVD");
+  const kort = oD.kort === oC.kort ? `Voor D66 en het CDA ${oD.kort === "ja" ? "wel" : "niet"}.` : `Voor D66 ${oD.kort === "ja" ? "wel" : "niet"}, voor het CDA ${oC.kort === "ja" ? "wel" : "niet"}.`;
+  const volgorde = [...P].sort((a, b) => D.totaal[b].links / D.totaal[b].n - D.totaal[a].links / D.totaal[a].n), iV = volgorde.indexOf("VVD");
+  const rang = iV === P.length - 1 ? "het minst vaak met links" : iV === 0 ? "het vaakst met links" : "vaker met links dan " + naam(volgorde[iV + 1]) + ", minder vaak dan " + naam(volgorde[iV - 1]);
+  $("conclusie").innerHTML = `
+    <section class="conclusie"><h2>Het kabinet als geheel</h2><p class="kort">Het kabinet vindt zijn meerderheid ${richting}.</p><ul>
       <li>Als D66, CDA en VVD samen vóór stemmen, komt ${pct(A.links || 0, tot)}% van de meerderheden alleen via links en ${pct(A.rechts || 0, tot)}% alleen via rechts; ${pct(A.breed || 0, tot)}% heeft brede steun.</li>
-      <li>${trend}</li></ul></div>
-    <p class="let"><b>Let op:</b> dit gaat over stemgedrag, niet over met wie partijen onderhandelden. "Met links" betekent vaak ook "tegen de PVV", omdat PVV en Groep Markuszower het grootste deel van het rechtse blok vormen. En een motie over een detail telt even zwaar als een belangrijke wet. De oordelen ("duidelijk naar links", "in het midden") volgen uit vaste regels, die onder Werkwijze staan.</p>`;
+      <li>${trend}</li></ul></section>
+    <section class="conclusie"><h2>Kijken D66 en CDA naar links? De conclusie</h2><p class="kort">${kort}</p>
+      ${partij("D66")}${partij("CDA")}</section>
+    <section class="conclusie"><h2>En de VVD dan?</h2><p class="kort">De VVD ${oV.tekst} en stemt van de drie coalitiepartijen ${rang}.</p>
+      ${partij("VVD", false)}
+      <p class="let"><b>Let op:</b> dit gaat over stemgedrag, niet over met wie partijen onderhandelden. "Met links" betekent vaak ook "tegen de PVV", omdat PVV en Groep Markuszower het grootste deel van het rechtse blok vormen. En een motie over een detail telt even zwaar als een belangrijke wet. De oordelen ("duidelijk naar links", "in het midden") volgen uit vaste regels, die onder Werkwijze staan.</p></section>`;
 }
 conclusie();
 
