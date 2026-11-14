@@ -121,7 +121,7 @@ details > summary{cursor:pointer}
 .pbalk .in{max-width:980px;margin:0 auto;padding:7px 16px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .pbalk .in::-webkit-scrollbar{display:none}
 .pbalk a{flex:none;display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border:1px solid var(--line);border-radius:99px;font-size:.82rem;font-weight:600;text-decoration:none;color:var(--ink);background:var(--card);white-space:nowrap}
-.pbalk a:hover{border-color:var(--ink3)} .pbalk a.nu{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pbalk a:hover{border-color:var(--ink3)} .pbalk a.nu,.pbalk a.nu:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 .pbalk .lbl{flex:none;align-self:center;font-size:.78rem;color:var(--ink3);margin-right:2px}
 nav.top .pbalk .in{gap:6px;font-size:inherit}
 @media (max-width:760px){nav.top .pbalk .in{flex-wrap:nowrap} nav.top .in{gap:4px 14px}}
@@ -134,9 +134,9 @@ h2.vind small,h2 small{font-family:var(--mono);font-weight:400;font-size:.72rem;
 nav.top{background:var(--bg);border-bottom:1px solid var(--line)}
 nav.top .in{padding:14px 16px 10px;gap:6px}
 nav.top .logo{font-size:1.35rem;font-weight:600;letter-spacing:-.025em;color:var(--ink);margin-right:auto}
-nav.top .in > a:not(.logo){font-size:.9rem;color:var(--ink2);padding:5px 13px;border:1px solid var(--line);border-radius:999px}
-nav.top .in > a:not(.logo):hover{border-color:var(--ink2);color:var(--ink)}
-@media (max-width:560px){nav.top .in > a:not(.logo){font-size:.8rem;padding:4px 9px} nav.top .logo{width:100%;font-size:1.2rem}}
+nav.top > .in > a:not(.logo){font-size:.9rem;color:var(--ink2);padding:5px 13px;border:1px solid var(--line);border-radius:999px}
+nav.top > .in > a:not(.logo):hover{border-color:var(--ink2);color:var(--ink)}
+@media (max-width:560px){nav.top > .in > a:not(.logo){font-size:.8rem;padding:4px 9px} nav.top .logo{width:100%;font-size:1.2rem}}
 .pbalk a{font-family:var(--letter);border-radius:999px}
 .pbalk .lbl{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
 .k4,.k3,.nk,.tegel,.kaart,.strip,.hero,.conclusie,.groepen div{border-radius:14px}
@@ -145,3 +145,4 @@ nav.top .in > a:not(.logo):hover{border-color:var(--ink2);color:var(--ink)}
 footer{border-top:1px solid var(--ink);font-family:var(--letter);font-size:.88rem;color:var(--ink3)}
 footer a{color:var(--ink2);border-bottom:1px solid var(--line);text-decoration:none}
 .hoekje{margin:14px 0 0;font-size:.88rem;color:var(--ink3)}
+nav.top .pbalk a:not(.nu){color:var(--ink)}
