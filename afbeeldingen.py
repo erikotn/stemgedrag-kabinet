@@ -2,7 +2,7 @@
 import sys, pathlib
 from playwright.sync_api import sync_playwright
 
-URL = sys.argv[1] if len(sys.argv) > 1 else "https://stemgedrag-kabinet.pages.dev/"
+URL = sys.argv[1] if len(sys.argv) > 1 else "https://stemgedrag-kabinet.pages.dev/kabinet/"
 UIT = pathlib.Path("bluesky")
 UIT.mkdir(exist_ok=True)
 

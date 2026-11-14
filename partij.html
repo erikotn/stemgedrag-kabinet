@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{HEAD}}
+</head>
+<body>
+{{NAV}}
+<main>
+<header>
+  <div class="breadcrumb"><a href="/">De Kamer stemt</a> › <a href="/#partijen">Partijen</a> › <span id="kruim"></span></div>
+  <h1 id="titel"></h1>
+  <p class="lead" id="lead"></p>
+  <p class="meta">Stand: stemmingen tot en met {{STAND}} · bron: open data van de Tweede Kamer</p>
+</header>
+
+<div class="tegels" id="tegels"></div>
+
+<section>
+  <h2 id="met-kop"></h2>
+  <p class="vraag" id="met-tekst"></p>
+  <div class="card" id="met-balken"></div>
+  <div class="dleg"><span><span class="sw" style="background:var(--links)"></span>linkse partij</span><span><span class="sw" style="background:var(--midden)"></span>middenpartij</span><span><span class="sw" style="background:var(--rechts)"></span>rechtse partij</span><span><span class="sw" style="background:var(--d66)"></span>D66</span><span><span class="sw" style="background:var(--cda)"></span>CDA</span><span><span class="sw" style="background:var(--vvd)"></span>VVD</span></div>
+  <p class="meta">Percentage van de stemmingen waarin beide partijen een standpunt innamen en hetzelfde stemden, gerekend over de stemmingen waarin niet alle fracties hetzelfde stemden.</p>
+</section>
+
+<section>
+  <h2>Andere partijen</h2>
+  <div class="kaarten" id="kaarten"></div>
+</section>
+
+<footer>
+  Bron: <a href="https://opendata.tweedekamer.nl/">Gegevensmagazijn van de Tweede Kamer</a>. Werkwijze: zie <a href="/#werkwijze">de voorpagina</a>. Alle cijfers worden automatisch berekend, zonder AI.
+</footer>
+</main>
+
+<script>
+const D = /*DATA*/null, p = D.p, H = D.home;
+const $ = id => document.getElementById(id);
+const nl = n => n.toLocaleString("nl-NL");
+const pct = (a, n) => n ? Math.round(100 * a / n) : 0;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const COA = {D66: "--d66", CDA: "--cda", VVD: "--vvd"};
+const info = f => H.partijen.find(x => x.f === f) || {};
+const kleur = f => COA[f] ? `var(${COA[f]})` : info(f).blok === "links" ? "var(--links)" : info(f).blok === "rechts" ? "var(--rechts)" : "var(--midden)";
+const dot = f => `<span class="dot" style="background:${kleur(f)}"></span>`;
+const plink = f => info(f).slug ? `<a href="/partij/${info(f).slug}/">${esc(f)}</a>` : esc(f);
+const lijst = a => a.length > 1 ? a.slice(0, -1).join(", ") + " en " + a[a.length - 1] : (a[0] || "");
+
+const TIP = document.createElement("div"); TIP.className = "tip"; TIP.style.position = "fixed"; document.body.appendChild(TIP);
+document.addEventListener("pointermove", e => { const t = e.target.closest("[data-tip]"); if (!t) { TIP.style.display = "none"; return; }
+  TIP.innerHTML = t.dataset.tip; TIP.style.display = "block"; TIP.style.left = Math.min(innerWidth - TIP.offsetWidth - 8, e.clientX + 14) + "px"; TIP.style.top = (e.clientY - TIP.offsetHeight - 12) + "px"; });
+
+const won = pct(p.won, p.n), mot = pct(p.moties_aangenomen, p.moties);
+$("kruim").textContent = p.f;
+$("titel").innerHTML = `${dot(p.f)} Stemgedrag ${esc(p.f)} in de Tweede Kamer`;
+$("lead").innerHTML = `${esc(p.f)} heeft ${p.zetels} zetels. Sinds 23 februari 2026 stemde ${esc(p.f)} mee over ${nl(p.n)} moties, amendementen en wetsvoorstellen en stond daarbij in <b>${won}%</b> van de gevallen aan de winnende kant. ` +
+  `${esc(p.f)} gaf <b>${nl(p.doorslag)} keer</b> de doorslag: zonder ${esc(p.f)} was de uitslag dan andersom geweest.` +
+  (p.moties ? ` Van de ${nl(p.moties)} moties die ${esc(p.f)} als eerste indiende, werden er ${nl(p.moties_aangenomen)} aangenomen (${mot}%).` : "");
+$("tegels").innerHTML = [[p.zetels, "zetels"], [won + "%", "aan de winnende kant"], [nl(p.doorslag) + "×", "de doorslag gegeven"], [p.moties ? `${mot}%` : "–", `van de eigen moties aangenomen${p.moties ? ` (${p.moties_aangenomen} van ${p.moties})` : ""}`]]
+  .map(([g, t]) => `<div class="tegel"><div class="g">${g}</div><div class="t">${t}</div></div>`).join("");
+
+const G = Object.entries(p.gelijk).sort((a, b) => b[1] - a[1]);
+$("met-kop").textContent = `Met wie stemt ${p.f}?`;
+$("met-tekst").innerHTML = `${esc(p.f)} stemt het vaakst hetzelfde als ${lijst(G.slice(0, 3).map(([g, v]) => `${plink(g)} (${v}%)`))}, en het minst vaak als ${lijst(G.slice(-2).reverse().map(([g, v]) => `${plink(g)} (${v}%)`))}.`;
+$("met-balken").innerHTML = G.map(([g, v]) => `<div class="rank"><div>${dot(g)} ${plink(g)}</div><div class="rb"><div class="seg" style="width:${v}%;background:${kleur(g)}" data-tip="${esc(p.f)} en ${esc(g)} stemden in ${v}% hetzelfde"></div></div><div class="rp">${v}%</div></div>`).join("");
+$("kaarten").innerHTML = H.partijen.filter(x => x.f !== p.f).map(x => `<a class="kaart" href="/partij/${x.slug}/"><b>${dot(x.f)}${esc(x.f)}</b><small>${x.zetels} zetels</small></a>`).join("");
+</script>
+</body>
+</html>

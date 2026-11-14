@@ -2,10 +2,13 @@ name: Bijwerken
 
 on:
   schedule:
-    - cron: "0 5 * * *"   # dagelijks 06:00/07:00 Nederlandse tijd
+    - cron: "0 6-21 * * *"   # elk uur, 07:00–22:00 Nederlandse wintertijd (08:00–23:00 zomertijd)
   workflow_dispatch:
   push:
     branches: [main]
+
+permissions:
+  contents: write   # om de datastand in de repo op te slaan (houdt de geplande taak ook actief)
 
 env:
   PROJECT: stemgedrag-kabinet
@@ -14,11 +17,13 @@ env:
 jobs:
   bouw:
     runs-on: ubuntu-latest
+    concurrency: bijwerken
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - run: pip install numpy playwright
 
       - name: Vorige versie ophalen (voor de datacheck)
         run: |
@@ -28,13 +33,20 @@ jobs:
       - name: Data ophalen bij de Tweede Kamer
         run: python ophalen.py
 
-      - name: Pagina bouwen en data controleren
+      - name: Pagina's bouwen en data controleren
         run: |
-          OUD=$(test -f site/data.json && python -c 'import json;d=json.load(open("site/data.json"));print(d["n_stemmingen"],d["stand"])' || echo geen)
+          vingerafdruk() { test -f site/data.json && python -c 'import json,hashlib;d=json.load(open("site/data.json"));d.pop("gebouwd",None);print(hashlib.md5(json.dumps(d,sort_keys=True).encode()).hexdigest())' || echo geen; }
+          OUD=$(vingerafdruk)
           python build.py
-          NIEUW=$(python -c 'import json;d=json.load(open("site/data.json"));print(d["n_stemmingen"],d["stand"])')
+          NIEUW=$(vingerafdruk)
           echo "oud: $OUD  nieuw: $NIEUW"
           if [ "$OUD" = "$NIEUW" ]; then echo "GEWIJZIGD=nee" >> "$GITHUB_ENV"; else echo "GEWIJZIGD=ja" >> "$GITHUB_ENV"; fi
+
+      - name: Pagina's vooraf renderen (voor zoekmachines) en deelafbeeldingen maken
+        if: env.GEWIJZIGD == 'ja' || github.event_name != 'schedule'
+        run: |
+          python -m playwright install --with-deps chromium
+          python prerender.py
 
       - name: Live zetten op Cloudflare Pages
         if: env.GEWIJZIGD == 'ja' || github.event_name != 'schedule'
@@ -44,3 +56,13 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           preCommands: npx wrangler pages project create ${{ env.PROJECT }} --production-branch=main || true
           command: pages deploy site --project-name=${{ env.PROJECT }} --branch=main
+
+      - name: Datastand opslaan in de repo
+        if: env.GEWIJZIGD == 'ja' && github.event_name == 'schedule'
+        run: |
+          mkdir -p data && cp site/data.json data/stand.json
+          git config user.name "stemgedrag-bot"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/stand.json
+          git commit -m "Datastand $(python -c 'import json;print(json.load(open("data/stand.json"))["stand"])')" || exit 0
+          git push

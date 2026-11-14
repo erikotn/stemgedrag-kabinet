@@ -7,7 +7,7 @@ params = {
                "and Agendapunt/Activiteit/Datum ge 2026-02-23T00:00:00Z",
     "$select": "Id,BesluitSoort,BesluitTekst,StemmingsSoort",
     "$expand": "Agendapunt($select=Id;$expand=Activiteit($select=Datum)),"
-               "Zaak($select=Soort,Nummer,Onderwerp,Titel;$expand=Document($select=DocumentNummer,Soort,Datum)),"
+               "Zaak($select=Soort,Nummer,Onderwerp,Titel;$expand=Document($select=DocumentNummer,Soort,Datum),ZaakActor($select=ActorNaam,ActorFractie,Relatie)),"
                "Stemming($filter=Verwijderd eq false;$select=ActorFractie,Soort,FractieGrootte,Persoon_Id,Vergissing)",
     "$top": "250",
 }
