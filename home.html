@@ -245,7 +245,8 @@ $("overlopers").innerHTML = D.overlopers.filter((o, i, a) => a.findIndex(x => x.
   $("nee-uitleg").innerHTML = `Hoe vaak stemt een oppositiepartij tegen moties en amendementen die de coalitie (D66, CDA, VVD) indient? Voorstellen die de partij zelf mede indiende tellen niet mee. ${lijst(laag.map(x => x.f))} stemmen juist bijna altijd mee.`;
   const mx = Math.max(...opp.map(x => pt(x.coa)));
   $("nee-balken").innerHTML = opp.map(x => `<div class="rank"><div>${dot(x.f)} ${plink(x.f)}</div><div class="rb"><div class="seg" style="width:${100 * pt(x.coa) / mx}%;background:${kleur(x.f)}" data-tip="${esc(x.f)} stemde tegen ${x.coa.t} van de ${x.coa.n} coalitievoorstellen"></div></div><div class="rp">${pt(x.coa)}%</div></div>`).join("");
-  $("nee-coa").textContent = `En de coalitie zelf? D66, CDA en VVD stemmen tegen ${lijst(coa.map(x => pt(x.opp) + "%"))} van de voorstellen van de oppositie. Zo houdt een coalitie haar koers.`;
+  const cg = k => Math.round(coa.reduce((s, x) => s + pt(x[k]), 0) / coa.length);
+  $("nee-coa").textContent = `En de coalitie zelf? D66, CDA en VVD stemmen gemiddeld tegen ${cg("links")}% van de voorstellen van links, ${cg("midden")}% van het midden en ${cg("rechts")}% van rechts.`;
 })();
 
 // ---------- laatste ronde ----------

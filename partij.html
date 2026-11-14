@@ -141,10 +141,11 @@ $("met-alle").innerHTML = G.map(mbalk).join("");
 // nee
 (function () { const n = p.nee, pt = x => pct(x.t, x.n), isC = p.groep === "coalitie";
   const allen = H.nee || [], gem = k => { const a = allen.filter(x => isC ? x.blok === "coalitie" : x.blok !== "coalitie"); return a.length ? Math.round(a.reduce((s, x) => s + pct(x[k].t, x[k].n), 0) / a.length) : null; };
-  $("nee-kop").textContent = isC ? `${Naam(p.f)} stemt tegen ${pt(n.opp)}% van de voorstellen van de oppositie` : `${Naam(p.f)} stemt tegen ${pt(n.coa)}% van de voorstellen van de coalitie`;
+  $("nee-kop").textContent = isC ? `${Naam(p.f)} stemt tegen ${pt(n.links)}% van de voorstellen van links en ${pt(n.rechts)}% van rechts` : `${Naam(p.f)} stemt tegen ${pt(n.coa)}% van de voorstellen van de coalitie`;
   $("nee-uitleg").textContent = `Hoe vaak stemde ${naam(p.f)} tegen moties en amendementen van andere partijen? Voorstellen die ${naam(p.f)} zelf mede indiende tellen niet mee.` + (isC ? ` Dat een coalitiepartij veel oppositievoorstellen wegstemt, is gebruikelijk.` : "");
-  $("nee-vgl").innerHTML = vgl(isC ? "tegen de andere coalitiepartijen" : "tegen de coalitie", pt(n.coa), kleur(p.f)) + vgl("tegen de oppositie", pt(n.opp), kleur(p.f)) +
-    (gem(isC ? "opp" : "coa") != null ? `<p class="meta" style="margin:8px 0 0">Gemiddeld ${isC ? "stemt een coalitiepartij tegen " + gem("opp") + "% van de oppositievoorstellen" : "stemt een oppositiepartij tegen " + gem("coa") + "% van de coalitievoorstellen"}.</p>` : "");
+  $("nee-vgl").innerHTML = `<p class="meta" style="margin:0 0 6px">Tegen voorstellen van:</p>` + vgl(isC ? "andere coalitiepartijen" : "de coalitie", pt(n.coa), "var(--ink)") +
+    [["links", "links", "var(--links)"], ["midden", "het midden", "var(--midden)"], ["rechts", "rechts", "var(--rechts)"]].filter(([k]) => n[k] && n[k].n).map(([k, l, kl]) => vgl(l, pt(n[k]), kl)).join("") +
+    (!isC && gem("coa") != null ? `<p class="meta" style="margin:8px 0 0">Gemiddeld ${isC ? "stemt een coalitiepartij tegen " + gem("opp") + "% van de oppositievoorstellen" : "stemt een oppositiepartij tegen " + gem("coa") + "% van de coalitievoorstellen"}.</p>` : "");
 })();
 
 // verwacht

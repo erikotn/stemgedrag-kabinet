@@ -309,7 +309,8 @@ for f in HUIDIG:
     def tel(rr): return dict(t=sum(r["alle"][f] == "T" for r in rr), n=len(rr))
     nee[f] = dict(f=f, blok=BLOK.get(f), alles=tel(sel),
                   coa=tel([r for r in sel if BLOK.get(r["indiener"]) == "coalitie"]),
-                  opp=tel([r for r in sel if BLOK.get(r["indiener"]) != "coalitie"]))
+                  opp=tel([r for r in sel if BLOK.get(r["indiener"]) != "coalitie"]),
+                  **{g: tel([r for r in sel if BLOK.get(r["indiener"]) == g]) for g in ("links", "midden", "rechts")})
 
 # --- 9. extra per partij -------------------------------------------------------------
 AFW = {x["f"]: x for x in afwijken}
