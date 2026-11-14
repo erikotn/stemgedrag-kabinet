@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{HEAD}}
+</head>
+<body>
+{{NAV}}
+<main>
+<header>
+  <div class="breadcrumb"><a href="/">De Kamer stemt</a> › Werkwijze</div>
+  <h1>Werkwijze</h1>
+  <p class="lead">Waar de cijfers vandaan komen en hoe ze berekend zijn. Alles automatisch, zonder AI, en na te rekenen.</p>
+</header>
+<ul id="werkwijze"></ul>
+<footer>Code: <a href="https://github.com/erikotn/stemgedrag-kabinet">GitHub</a> · ruwe uitkomsten: <a href="/data.json">data.json</a></footer>
+</main>
+<script>
+const D = /*DATA*/null;
+document.getElementById("werkwijze").innerHTML = [
+  `<b>Bron:</b> het Gegevensmagazijn van de Tweede Kamer (open data). Alle stemmingen sinds de beëdiging van het kabinet-Jetten op 23 februari 2026: moties, amendementen, wetsvoorstellen en begrotingen die zijn aangenomen of verworpen. Aangehouden, ingetrokken en zonder stemming aangenomen voorstellen tellen niet mee.`,
+  `<b>Kampen:</b> links = ${D.indeling.links.join(", ")}; rechts = ${D.indeling.rechts.join(", ")}; midden = ${D.indeling.midden.join(", ")}; coalitie = ${D.indeling.coalitie.join(", ")}.`,
+  `<b>Wie wint:</b> het percentage aangenomen moties en amendementen, ingedeeld naar het kamp van de partij van de eerste indiener. Wetsvoorstellen tellen daar niet mee, want die komen van het kabinet.`,
+  `<b>Tegen een wet van het eigen kabinet:</b> een stemming over een wetsvoorstel of begroting van het kabinet (geen initiatiefwet) waarbij D66, CDA of VVD tegen stemde.`,
+  `<b>Doorslag:</b> een partij gaf de doorslag als de uitslag was omgedraaid als die partij in haar geheel anders had gestemd. Alleen gevallen waarin de uitslag echt was omgedraaid tellen mee, niet een gelijke stand.`,
+  `<b>Bondjes en de kaart:</b> voor elk paar partijen het percentage stemmingen waarin ze hetzelfde stemden, alleen over stemmingen waarin niet iedereen hetzelfde stemde. De kaart is daaruit berekend met multidimensionale schaling.`,
+  `<b>Afwijken van het eigen kamp:</b> hoe vaak een partij anders stemde dan de zetelmeerderheid van de rest van haar kamp (voor D66, CDA en VVD: alleen als de andere twee hetzelfde stemden). Een overloper "gaf de doorslag" als de uitslag zonder die partij andersom was geweest.`,
+  `<b>Hoofdelijke stemmingen:</b> per Kamerlid geteld; het standpunt van een fractie is de kant van de meerderheid van haar leden.`,
+  `<b>Bijwerken:</b> elk uur wordt gekeken of de Kamer nieuwe uitslagen heeft gepubliceerd, meestal de ochtend of middag na een stemronde. Voor publicatie wordt gecontroleerd dat alle fracties samen 150 zetels hebben en er geen onbekende fracties zijn.`,
+  `<b>Wat dit niet meet:</b> wie met wie onderhandelt, hoe zwaar een stemming politiek weegt, of wat een partij beloofde. Elke stemming telt even zwaar.`,
+].map(t => `<li>${t}</li>`).join("");
+</script>
+</body>
+</html>

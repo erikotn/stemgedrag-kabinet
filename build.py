@@ -67,7 +67,7 @@ for b in besluiten:
         zr=sum(voor[f] for f in RECHTS), zm=sum(voor[f] for f in MIDDEN),
         V=sum(voor.values()), T=sum(tegen.values()), vt=dict(voor), tg=dict(tegen),
         indiener=next((a["ActorFractie"] for a in zaak.get("ZaakActor", []) if a.get("Relatie") == "Indiener"), None),
-        nummer=zaak.get("Nummer", ""),
+        nummer=zaak.get("Nummer", ""), zsoort=zaak.get("Soort"),
     ))
 
 # --- datacheck -------------------------------------------------------------
@@ -172,8 +172,10 @@ mismatch = 0
 for r in rijen:
     uit = r["V"] > r["T"]
     r["marge"] = abs(r["V"] - r["T"])
-    r["doorslag"] = sorted(f for f in set(r["vt"]) | set(r["tg"])
-                           if ((r["V"] - r["vt"].get(f, 0) + r["tg"].get(f, 0)) > (r["T"] - r["tg"].get(f, 0) + r["vt"].get(f, 0))) != uit)
+    def omgedraaid(f):
+        V = r["V"] - r["vt"].get(f, 0) + r["tg"].get(f, 0); T = r["T"] - r["tg"].get(f, 0) + r["vt"].get(f, 0)
+        return T > V if uit else V > T          # echt andersom, niet alleen gelijke stand
+    r["doorslag"] = sorted(f for f in set(r["vt"]) | set(r["tg"]) if omgedraaid(f))
     mismatch += uit != r["aangenomen"]
 if mismatch > 0.01 * len(rijen):
     fout(f"{mismatch} stemmingen waarvan de zetels niet kloppen met de uitslag")
@@ -228,6 +230,77 @@ for i, f in enumerate(HUIDIG):
         gelijk={g: round(100 * float(A[i, j])) for j, g in enumerate(HUIDIG) if g != f},
     )
 
+# --- 8a. wiens voorstellen halen het (per kamp van de indiener) -----------------
+def kwart(d): return f"{d[:4]} K{(int(d[5:7]) - 1) // 3 + 1}"
+succes, succes_kw, succes_ronde, succes_soort = C.defaultdict(lambda: [0, 0]), C.defaultdict(lambda: C.defaultdict(lambda: [0, 0])), C.defaultdict(lambda: [0, 0]), C.defaultdict(lambda: C.defaultdict(lambda: [0, 0]))
+for r in rijen:
+    k = BLOK.get(r["indiener"])
+    if not k:
+        continue
+    for bak in (succes[k], succes_kw[kwart(r["datum"])][k], succes_soort[r["soort"]][k]) + ((succes_ronde[k],) if r["datum"] == ronde_dag else ()):
+        bak[0] += r["aangenomen"]; bak[1] += 1
+KAMPEN = ["coalitie", "midden", "links", "rechts"]
+succes_d = dict(
+    totaal={k: dict(aan=succes[k][0], n=succes[k][1]) for k in KAMPEN},
+    kwartaal=[dict(q=q, **{k: round(100 * v[k][0] / v[k][1]) if v[k][1] else None for k in KAMPEN}) for q, v in sorted(succes_kw.items())],
+    soort={s: {k: dict(aan=succes_soort[s][k][0], n=succes_soort[s][k][1]) for k in KAMPEN} for s in ["Motie", "Amendement"]},
+    ronde={k: dict(aan=succes_ronde[k][0], n=succes_ronde[k][1]) for k in KAMPEN},
+)
+
+# --- 8. wint links of rechts, bondjes, afwijkers -----------------------------------
+winnaar = lambda r: "links" if (r["L"] == "V") == r["aangenomen"] else "rechts"
+bots = [r for r in rijen if r["L"] and r["R"] and r["L"] != r["R"]]
+bots_tot = C.Counter(winnaar(r) for r in bots)
+bots_maand = C.defaultdict(C.Counter)
+for r in bots:
+    bots_maand[r["datum"][:7]][winnaar(r)] += 1
+bots_soort = {s: dict(C.Counter(winnaar(r) for r in bots if r["soort"] == s)) for s in ["Wet", "Amendement", "Motie"]}
+bots_ronde = C.Counter(winnaar(r) for r in bots if r["datum"] == ronde_dag)
+doorslag_bots = C.Counter(f for r in bots for f in r["doorslag"])
+
+paren = []
+for i, f in enumerate(HUIDIG):
+    for j, h in enumerate(HUIDIG):
+        if i < j:
+            paren.append(dict(a=f, b=h, pct=round(100 * float(A[i, j])), zelfde=BLOK.get(f) == BLOK.get(h)))
+binnen_coalitie = [p for p in paren if p["a"] in COALITIE and p["b"] in COALITIE]
+onverwacht = sorted((p for p in paren if not p["zelfde"]), key=lambda p: -p["pct"])[:5]
+breuken = sorted((p for p in paren if p["zelfde"]), key=lambda p: p["pct"])[:5]
+
+kamp = C.defaultdict(list)
+for f in HUIDIG:
+    kamp[BLOK.get(f, "midden")].append(f)
+def kampstand(r, f):
+    """Standpunt van de rest van f's kamp (zetelmeerderheid, zonder f zelf)."""
+    rest = [x for x in kamp[BLOK.get(f)] if x != f]
+    if BLOK.get(f) == "coalitie":   # coalitie: alleen als de andere twee hetzelfde stemden
+        st = {r["alle"].get(x) for x in rest}
+        return st.pop() if len(st) == 1 and None not in st else None
+    v = sum(zetels[x] for x in rest if r["alle"].get(x) == "V"); t = sum(zetels[x] for x in rest if r["alle"].get(x) == "T")
+    return "V" if v > t else "T" if t > v else None
+afwijken, overlopers = [], []
+for f in HUIDIG:
+    if BLOK.get(f) == "midden" or len(kamp[BLOK.get(f)]) < 2:
+        continue
+    n = a = 0
+    for r in rijen:
+        st = kampstand(r, f)
+        if not r["alle"].get(f) or not st:
+            continue
+        n += 1
+        if r["alle"][f] != st:
+            a += 1
+            if f in r["doorslag"]:
+                overlopers.append(dict(datum=r["datum"], f=f, kamp=BLOK.get(f), onderwerp=r["onderwerp"], url=r["url"], soort=r["soort"],
+                                       aangenomen=r["aangenomen"], V=r["V"], T=r["T"], stem=r["alle"][f]))
+    afwijken.append(dict(f=f, blok=BLOK.get(f), pct=round(100 * a / max(1, n)), n=n))
+afwijken.sort(key=lambda x: -x["pct"])
+tegen_eigen = [dict(datum=r["datum"], onderwerp=r["onderwerp"], url=r["url"], V=r["V"], T=r["T"], aangenomen=r["aangenomen"],
+                    tegen=[f for f in COALITIE if r["alle"].get(f) == "T"])
+               for r in rijen if r["zsoort"] in ("Wetgeving", "Begroting") and any(r["alle"].get(f) == "T" for f in COALITIE)]
+tegen_eigen.sort(key=lambda x: x["datum"], reverse=True)
+overlopers.sort(key=lambda x: x["datum"], reverse=True)
+
 home = dict(
     stand=kab["stand"], gebouwd=kab["gebouwd"], start=START, n_stemmingen=len(rijen),
     ronde_dag=ronde_dag, ronde=ronde, rondes=rondes,
@@ -237,6 +310,12 @@ home = dict(
     kabinet=dict(links=kab["blok"]["Alles"].get("links", 0), rechts=kab["blok"]["Alles"].get("rechts", 0),
                  breed=kab["blok"]["Alles"].get("breed", 0), totaal=sum(kab["blok"]["Alles"].values())),
     indeling=kab["indeling"],
+    bots=dict(n=len(bots), links=bots_tot["links"], rechts=bots_tot["rechts"],
+              maand=[dict(maand=m, links=c["links"], rechts=c["rechts"]) for m, c in sorted(bots_maand.items())],
+              soort=bots_soort, ronde=dict(links=bots_ronde["links"], rechts=bots_ronde["rechts"]),
+              doorslag=[dict(f=f, n=doorslag_bots.get(f, 0)) for f in sorted(HUIDIG, key=lambda f: -doorslag_bots.get(f, 0))]),
+    onverwacht=onverwacht, breuken=breuken, binnen_coalitie=binnen_coalitie, afwijken=afwijken, succes=succes_d,
+    tegen_eigen=tegen_eigen, overlopers=overlopers[:12], overlopers_ronde=[o for o in overlopers if o["datum"] == ronde_dag],
 )
 
 # --- schrijven ----------------------------------------------------------------------
@@ -277,12 +356,14 @@ dataset = {"@context": "https://schema.org", "@type": "Dataset", "name": "Stemge
            "url": BASIS + "/", "inLanguage": "nl", "dateModified": kab["stand"], "temporalCoverage": f"{START}/{kab['stand']}",
            "isBasedOn": "https://opendata.tweedekamer.nl/", "creator": {"@type": "Organization", "name": "De Kamer stemt"},
            "distribution": {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": BASIS + "/data.json"}}
-schrijf("home.html", home, "/", "De Kamer stemt – stemgedrag van de Tweede Kamer, elke stemronde bijgewerkt",
-        f"Hoe stemt de Tweede Kamer? Alle {len(rijen):,} stemmingen sinds 23 februari 2026: de laatste stemronde, wie de doorslag gaf, wie met wie stemt, en per partij.".replace(",", "."),
+schrijf("home.html", home, "/", "De Kamer stemt – wint links of rechts in de Tweede Kamer?",
+        f"Wint links of rechts in de Tweede Kamer? Wie heeft de doorslag, welke bondjes zijn er en wie stemt anders dan verwacht? Alle {len(rijen):,} stemmingen sinds 23 februari 2026, per partij.".replace(",", "."),
         "home", [dataset])
 schrijf("kabinet.html", kab, "/kabinet/", "Met wie stemt het kabinet-Jetten? Stemgedrag van D66, CDA en VVD",
         "Zoekt het minderheidskabinet zijn meerderheid links of rechts? Hoe vaak stemmen D66, CDA en VVD met links, met rechts en met JA21? Op basis van alle stemmingen sinds 23 februari 2026.",
         "kabinet")
+schrijf("werkwijze.html", dict(indeling=kab["indeling"]), "/werkwijze/", "Werkwijze – De Kamer stemt",
+        "Hoe De Kamer stemt de stemmingen van de Tweede Kamer analyseert: bron, kampen, botsingen, doorslag, bondjes en afwijkers.", "home")
 for f, p in partijen.items():
     schrijf("partij.html", dict(p=p, home=dict(stand=kab["stand"], partijen=home["partijen"], indeling=kab["indeling"], n_stemmingen=len(rijen))),
             f"/partij/{p['slug']}/", f"Stemgedrag {f} in de Tweede Kamer – met wie stemt {f}?",
