@@ -364,6 +364,7 @@ def schrijf(sjabloon, data, pad, titel, beschrijving, og, extra_ld=None):
     kop = f"""<script>if (location.hostname === "stemgedrag-kabinet.pages.dev") location.replace("{BASIS}" + (location.pathname === "/" && !location.hash ? "/kabinet/" : location.pathname + location.hash));</script>
 <title>{html.escape(titel)}</title>
 <meta name="description" content="{html.escape(beschrijving)}">
+<meta name="msvalidate.01" content="CB28E8EC8C8754827E8F64085FF6BA47">
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="De Kamer stemt">
 <meta property="og:title" content="{html.escape(titel)}"><meta property="og:description" content="{html.escape(beschrijving)}">
