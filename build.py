@@ -365,6 +365,7 @@ def schrijf(sjabloon, data, pad, titel, beschrijving, og, extra_ld=None):
 <title>{html.escape(titel)}</title>
 <meta name="description" content="{html.escape(beschrijving)}">
 <meta name="msvalidate.01" content="CB28E8EC8C8754827E8F64085FF6BA47">
+<script>if (/(^|\.)dekamerstemt\.nl$/.test(location.hostname)) {{ const s = document.createElement("script"); s.defer = true; s.src = "https://static.cloudflareinsights.com/beacon.min.js"; s.dataset.cfBeacon = '{{"token": "6b07f13d881a468f8259b5cef0126166"}}'; document.head.appendChild(s); }}</script>
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="De Kamer stemt">
 <meta property="og:title" content="{html.escape(titel)}"><meta property="og:description" content="{html.escape(beschrijving)}">
