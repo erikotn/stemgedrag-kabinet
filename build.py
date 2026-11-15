@@ -347,7 +347,7 @@ home = dict(
 )
 
 # --- schrijven ----------------------------------------------------------------------
-BASIS = "https://stemgedrag-kabinet.pages.dev"   # wordt https://dekamerstemt.nl zodra het domein gekoppeld is
+BASIS = "https://dekamerstemt.nl"
 STAND_NL = dt.date.fromisoformat(kab["stand"]).strftime("%-d-%-m-%Y")
 KLEUR = {"D66": "var(--d66)", "CDA": "var(--cda)", "VVD": "var(--vvd)"}
 NAV = open("nav.html").read().replace("{{PARTIJEN}}", '<span class="lbl">Kies een partij:</span>' + "".join(
@@ -360,7 +360,9 @@ def schrijf(sjabloon, data, pad, titel, beschrijving, og, extra_ld=None):
     ld = [{"@context": "https://schema.org", "@type": "WebPage", "name": titel, "description": beschrijving, "url": url,
            "inLanguage": "nl", "dateModified": kab["stand"], "isPartOf": {"@type": "WebSite", "name": "De Kamer stemt", "url": BASIS + "/"}}]
     ld += extra_ld or []
-    kop = f"""<title>{html.escape(titel)}</title>
+    # oude adres stuurt door; de kale root (Bluesky-link) gaat naar het kabinetsdossier
+    kop = f"""<script>if (location.hostname === "stemgedrag-kabinet.pages.dev") location.replace("{BASIS}" + (location.pathname === "/" && !location.hash ? "/kabinet/" : location.pathname + location.hash));</script>
+<title>{html.escape(titel)}</title>
 <meta name="description" content="{html.escape(beschrijving)}">
 <link rel="canonical" href="{url}">
 <meta property="og:type" content="website"><meta property="og:locale" content="nl_NL"><meta property="og:site_name" content="De Kamer stemt">

@@ -2,7 +2,7 @@
 import sys, pathlib
 from playwright.sync_api import sync_playwright
 
-URL = sys.argv[1] if len(sys.argv) > 1 else "https://stemgedrag-kabinet.pages.dev/kabinet/"
+URL = sys.argv[1] if len(sys.argv) > 1 else "https://dekamerstemt.nl/kabinet/"
 UIT = pathlib.Path("bluesky")
 UIT.mkdir(exist_ok=True)
 
@@ -31,7 +31,7 @@ with sync_playwright() as p:
             new Function('el', 'kop', opruim)(el, kop);
             const v = document.createElement('div');
             v.style.cssText = 'margin-top:14px;font-size:12px;color:#7a7975';
-            v.textContent = 'stemgedrag-kabinet.pages.dev · bron: open data Tweede Kamer · stemmingen t/m ' + stand;
+            v.textContent = 'dekamerstemt.nl · bron: open data Tweede Kamer · stemmingen t/m ' + stand;
             el.appendChild(v);
         }""", [opruim, stand])
         el.screenshot(path=str(UIT / naam))
