@@ -392,7 +392,7 @@ json.dump(dict(home, kabinet_data=kab), open(vorige, "w"), ensure_ascii=False)
 dataset = {"@context": "https://schema.org", "@type": "Dataset", "name": "Stemgedrag Tweede Kamer sinds 23 februari 2026",
            "description": "Alle stemmingen in de Tweede Kamer sinds de beëdiging van het kabinet-Jetten, per fractie, met afgeleide maten: wie gaf de doorslag, wie stemt met wie, en waar het kabinet zijn meerderheid vindt.",
            "url": BASIS + "/", "inLanguage": "nl", "dateModified": kab["stand"], "temporalCoverage": f"{START}/{kab['stand']}",
-           "isBasedOn": "https://opendata.tweedekamer.nl/", "creator": {"@type": "Organization", "name": "De Kamer stemt"},
+           "isBasedOn": "https://opendata.tweedekamer.nl/", "license": "https://creativecommons.org/publicdomain/zero/1.0/", "creator": {"@type": "Organization", "name": "De Kamer stemt"},
            "distribution": {"@type": "DataDownload", "encodingFormat": "application/json", "contentUrl": BASIS + "/data.json"}}
 schrijf("home.html", home, "/", "De Kamer stemt – wint links of rechts in de Tweede Kamer?",
         f"Wint links of rechts in de Tweede Kamer? Wie heeft de doorslag, welke bondjes zijn er en wie stemt anders dan verwacht? Alle {len(rijen):,} stemmingen sinds 23 februari 2026, per partij.".replace(",", "."),
