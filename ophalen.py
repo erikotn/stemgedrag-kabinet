@@ -1,5 +1,5 @@
 """Haalt alle stemmingsbesluiten sinds de beëdiging van kabinet-Jetten op uit het Gegevensmagazijn."""
-import json, urllib.request, urllib.parse
+import json, time, urllib.error, urllib.request, urllib.parse
 
 BASE = "https://gegevensmagazijn.tweedekamer.nl/OData/v4/2.0/Besluit"
 params = {
@@ -15,8 +15,16 @@ alles, skip = [], 0
 while True:
     p = dict(params, **{"$skip": str(skip), "$orderby": "Id"})
     url = BASE + "?" + urllib.parse.urlencode(p, quote_via=urllib.parse.quote)
-    with urllib.request.urlopen(url, timeout=120) as r:
-        d = json.load(r)
+    for poging in range(5):   # het Gegevensmagazijn geeft af en toe een 500 of time-out; dan even wachten en opnieuw
+        try:
+            with urllib.request.urlopen(url, timeout=120) as r:
+                d = json.load(r)
+            break
+        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as e:
+            if poging == 4:
+                raise
+            print(f"fout bij skip {skip}: {e}, opnieuw over {30 * (poging + 1)} s", flush=True)
+            time.sleep(30 * (poging + 1))
     if not d["value"]:
         break
     alles += d["value"]
